@@ -97,12 +97,12 @@ class AbstractOperationMultipleEvalSubspace : public base::OperationMultipleEval
 
   virtual size_t getAlignment() = 0;
 
-  virtual double getDuration() override { return this->duration; }
+  double getDuration() override { return this->duration; }
 
   static inline size_t getChunkGridPoints() { return 12; }
   static inline size_t getChunkDataPoints() {
     return 24;  // must be divisible by 24
   }
 };
-}
-}
+}  // namespace datadriven
+}  // namespace sgpp

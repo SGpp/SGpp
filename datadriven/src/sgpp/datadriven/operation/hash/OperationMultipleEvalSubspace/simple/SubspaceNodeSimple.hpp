@@ -6,12 +6,12 @@
 #ifndef SUBSPACENODESIMPLE_HPP
 #define SUBSPACENODESIMPLE_HPP
 
-#include <vector>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -20,7 +20,7 @@ class SubspaceNodeSimple {
   std::vector<size_t> level;
   std::vector<size_t> hInverse;
   size_t actualGridPointsOnLevel;
-  std::vector<size_t> indices; //for stream computations
+  std::vector<size_t> indices;  //for stream computations
   size_t gridPointsOnLevel;
 
   SubspaceNodeSimple(std::vector<size_t>& level, std::vector<size_t>& hInverse,
@@ -36,12 +36,12 @@ class SubspaceNodeSimple {
 
     for (size_t j = 0; j < dim; j++) {
       int dimTemp = static_cast<int>(this->hInverse[j]);
-      dimTemp >>= 1; //skip even indices
+      dimTemp >>= 1;  //skip even indices
       gridPointsOnLevel *= dimTemp;
     }
   }
 
-  //increases number of grid points on the subspace
+  // increases number of grid points on the subspace
   void addGridPoint(std::vector<size_t>& index) {
     size_t dim = index.size();
 
@@ -53,7 +53,7 @@ class SubspaceNodeSimple {
   }
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace sgpp
 
 #endif /* SUBSPACENODESIMPLE_HPP */

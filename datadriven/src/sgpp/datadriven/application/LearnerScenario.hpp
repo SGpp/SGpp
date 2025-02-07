@@ -63,6 +63,8 @@ class LearnerScenario : public json::JSON {
                   base::AdaptivityConfiguration adaptivityConfig,
                   datadriven::TestsetConfiguration testsetConfiguration);
 
+  using DictNode::operator=;
+
   bool isInitialized() const;
 
   void setDatasetFileName(std::string datasetFileName);

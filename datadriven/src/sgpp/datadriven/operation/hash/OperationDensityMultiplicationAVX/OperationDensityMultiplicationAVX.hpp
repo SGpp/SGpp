@@ -118,7 +118,7 @@ namespace DensityAVX {
     finish_partial_mult(this->result, 0, result.getSize());
   }
   /// Execute a partial (startindex to startindex+chunksize) multiplication with the density matrix
-  virtual void start_partial_mult(int start_id, int chunksize) {
+  virtual void start_partial_mult(size_t start_id, size_t chunksize) {
     std::cerr << "Starting AVX mult with ..." << used_gridsize << std::endl;
     // size_t counter = 0;
     // size_t sicherheit = 0;
@@ -291,7 +291,7 @@ namespace DensityAVX {
   virtual void initialize_dataset(base::DataMatrix &dataset) {
   }
   /// Just a dummy function
-  virtual void finish_partial_mult(double *result, int start_id, int chunksize) {
+  virtual void finish_partial_mult(double *result, size_t start_id, size_t chunksize) {
   }
   /// Generates the right hand side vector for the density equation
   virtual void generateb(base::DataMatrix &dataset, sgpp::base::DataVector &b,

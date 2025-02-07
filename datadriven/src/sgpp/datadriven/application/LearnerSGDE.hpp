@@ -34,6 +34,7 @@ class LearnerSGDEConfiguration : public json::JSON {
  public:
   LearnerSGDEConfiguration();
   explicit LearnerSGDEConfiguration(const std::string& fileName);
+  using DictNode::operator=;
 
   LearnerSGDEConfiguration* clone() override;
 

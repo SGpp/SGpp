@@ -52,7 +52,7 @@ namespace base
    Py_DECREF(lst);
    
    // call Python
-   result = PyEval_CallObject(func,arglist);
+   result = PyObject_CallObject(func,arglist);
    // trash arglist and lst
    Py_DECREF(arglist);
   

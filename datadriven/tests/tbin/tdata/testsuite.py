@@ -14,9 +14,9 @@ from tbin.tdata.test_ARFFAdapter import TestARFFAdapter
 from tbin.tdata.test_DataContainer import TestDataContainer
 from tbin.tdata.test_DataEntry import TestDataEntry 
 
-suite1 = unittest.makeSuite(TestARFFAdapter,'test')
-suite2 = unittest.makeSuite(TestDataContainer,'test')
-suite3 = unittest.makeSuite(TestDataEntry,'test')
+suite1 = unittest.defaultTestLoader.loadTestsFromTestCase(TestARFFAdapter)
+suite2 = unittest.defaultTestLoader.loadTestsFromTestCase(TestDataContainer)
+suite3 = unittest.defaultTestLoader.loadTestsFromTestCase(TestDataEntry)
 alltests = unittest.TestSuite((suite1, suite2, suite3))
 
 if __name__ == "__main__":

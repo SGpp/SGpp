@@ -40,7 +40,7 @@ FuzzyExtensionPrinciple::~FuzzyExtensionPrinciple() {}
 void FuzzyExtensionPrinciple::prepareApply() {}
 
 FuzzyInterval* FuzzyExtensionPrinciple::apply(
-    const std::vector<const FuzzyInterval*>& xFuzzy) {
+    const std::vector<FuzzyInterval*>& xFuzzy) {
   base::Printer::getInstance().printStatusBegin("Applying fuzzy extension principle...");
 
   const size_t d = f->getNumberOfParameters();

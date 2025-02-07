@@ -167,7 +167,7 @@ class ARFFAdapter(DataAdapter):
         if not mode[-1] == "b":
             mode += "b"
         # gzip-file
-        if re.match(".*\.gz$", filename):
+        if re.match(r".*\.gz$", filename):
             fd = gzip.open(filename, mode)
         # non gzip-file
         else:

@@ -243,7 +243,7 @@ void OperationMultipleEvalSubspaceCombined::prepareSubspaceIterator() {
     }
   }
 
-  delete jumpIndexMap;
+  delete[] jumpIndexMap;
 
   // make sure that the tensor products are calculated entirely at the first subspace
   SubspaceNodeCombined& firstNode = this->allSubspaceNodes[0];

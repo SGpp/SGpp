@@ -178,7 +178,7 @@ class CSVAdapter(DataAdapter):
     # @return file descriptor
     def __gzOpen(self, filename, mode="r"):
         # gzip-file
-        if re.match(".*\.gz$", filename):
+        if re.match(r".*\.gz$", filename):
             # mode set for binary data?
             if not mode[-1] == "b":
                 mode += "b"

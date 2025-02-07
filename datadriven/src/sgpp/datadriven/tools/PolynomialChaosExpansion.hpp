@@ -4,16 +4,6 @@
 // sgpp.sparsegrids.org
 
 #pragma once
-
-#include <algorithm>
-#include <cmath>
-#include <cstddef>
-#include <functional>
-#include <iostream>
-#include <map>
-#include <memory>
-#include <numeric>
-#include <random>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
@@ -26,6 +16,16 @@
 #include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/base/tools/sle/solver/Eigen.hpp>
 #include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
+
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <numeric>
+#include <random>
 #include <string>
 #include <utility>
 #include <vector>

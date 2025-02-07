@@ -58,7 +58,7 @@ class FuzzyExtensionPrinciple {
    * @return        fuzzy output interval; plain pointer due to the Python interface;
    *                wrap return value with smart pointer
    */
-  FuzzyInterval* apply(const std::vector<const FuzzyInterval*>& xFuzzy);
+  FuzzyInterval* apply(const std::vector<FuzzyInterval*>& xFuzzy);
 
   /**
    * @return  number of \f$\alpha\f$ segments

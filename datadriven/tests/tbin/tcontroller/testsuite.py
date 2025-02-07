@@ -13,8 +13,8 @@ sys.path.append(os.path.abspath(pathname) + '/../../..')
 from tbin.tcontroller.test_CheckpointController import TestCheckpointController
 #from tbin.tcontroller.test_TerminalController import TestTerminalController
 
-suite1 = unittest.makeSuite(TestCheckpointController,'test')
-#suite2 = unittest.makeSuite(TestTerminalController,'test')
+suite1 = unittest.defaultTestLoader.loadTestsFromTestCase(TestCheckpointController)
+#suite2 = unittest.defaultTestLoader.loadTestsFromTestCase(TestTerminalController)
 #alltests = unittest.TestSuite((suite1, suite2))
 alltests = unittest.TestSuite((suite1))
 
