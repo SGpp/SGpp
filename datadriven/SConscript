@@ -83,7 +83,11 @@ if env["USE_HPX"]:
 module.runPythonTests()
 module.buildBoostTests()
 module.runBoostTests()
+# Build performance tests...
 module.buildBoostTests("performanceTests", compileFlag=performanceTestFlag)
-module.runBoostTests("performanceTests", compileFlag=performanceTestFlag,
-                     runFlag=performanceTestRunFlag)
+# ... however, without OCL they are empty (via ifdefs) and boost would does
+# throw an error. Only run them when OCL is used
+if env["USE_OCL"]: 
+    module.runBoostTests("performanceTests", compileFlag=performanceTestFlag,
+                         runFlag=performanceTestRunFlag)
 module.checkStyle()
