@@ -1,0 +1,4 @@
+var OperationMultipleHierarchisationBsplineClenshawCurtis_8hpp =
+[
+    [ "sgpp::optimization::OperationMultipleHierarchisationBsplineClenshawCurtis", "classsgpp_1_1optimization_1_1OperationMultipleHierarchisationBsplineClenshawCurtis.html", "classsgpp_1_1optimization_1_1OperationMultipleHierarchisationBsplineClenshawCurtis" ]
+];

@@ -1,0 +1,4 @@
+var OperationRosenblattTransformation1DModPolyClenshawCurtis_8hpp =
+[
+    [ "sgpp::datadriven::OperationRosenblattTransformation1DModPolyClenshawCurtis", "classsgpp_1_1datadriven_1_1OperationRosenblattTransformation1DModPolyClenshawCurtis.html", "classsgpp_1_1datadriven_1_1OperationRosenblattTransformation1DModPolyClenshawCurtis" ]
+];

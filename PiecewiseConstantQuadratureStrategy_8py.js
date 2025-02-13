@@ -1,0 +1,4 @@
+var PiecewiseConstantQuadratureStrategy_8py =
+[
+    [ "python.uq.quadrature.bilinearform.PiecewiseConstantQuadratureStrategy.PiecewiseConstantQuadratureStrategy", "classpython_1_1uq_1_1quadrature_1_1bilinearform_1_1PiecewiseConstantQuadratureStrategy_1_1PiecewiseConstantQuadratureStrategy.html", "classpython_1_1uq_1_1quadrature_1_1bilinearform_1_1PiecewiseConstantQuadratureStrategy_1_1PiecewiseConstantQuadratureStrategy" ]
+];

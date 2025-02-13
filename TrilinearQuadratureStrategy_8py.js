@@ -1,0 +1,4 @@
+var TrilinearQuadratureStrategy_8py =
+[
+    [ "python.uq.quadrature.trilinearform.TrilinearQuadratureStrategy.TrilinearQuadratureStrategy", "classpython_1_1uq_1_1quadrature_1_1trilinearform_1_1TrilinearQuadratureStrategy_1_1TrilinearQuadratureStrategy.html", "classpython_1_1uq_1_1quadrature_1_1trilinearform_1_1TrilinearQuadratureStrategy_1_1TrilinearQuadratureStrategy" ]
+];

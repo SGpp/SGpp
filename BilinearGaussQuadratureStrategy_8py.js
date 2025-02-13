@@ -1,0 +1,4 @@
+var BilinearGaussQuadratureStrategy_8py =
+[
+    [ "python.uq.quadrature.bilinearform.BilinearGaussQuadratureStrategy.BilinearGaussQuadratureStrategy", "classpython_1_1uq_1_1quadrature_1_1bilinearform_1_1BilinearGaussQuadratureStrategy_1_1BilinearGaussQuadratureStrategy.html", "classpython_1_1uq_1_1quadrature_1_1bilinearform_1_1BilinearGaussQuadratureStrategy_1_1BilinearGaussQuadratureStrategy" ]
+];

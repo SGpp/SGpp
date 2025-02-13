@@ -1,0 +1,4 @@
+var namespacepython_1_1uq_1_1quadrature_1_1linearform_1_1LinearQuadratureStrategy =
+[
+    [ "LinearQuadratureStrategy", "classpython_1_1uq_1_1quadrature_1_1linearform_1_1LinearQuadratureStrategy_1_1LinearQuadratureStrategy.html", "classpython_1_1uq_1_1quadrature_1_1linearform_1_1LinearQuadratureStrategy_1_1LinearQuadratureStrategy" ]
+];

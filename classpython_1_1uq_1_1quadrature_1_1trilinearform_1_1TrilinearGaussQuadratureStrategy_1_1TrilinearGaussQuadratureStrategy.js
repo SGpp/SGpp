@@ -1,0 +1,4 @@
+var classpython_1_1uq_1_1quadrature_1_1trilinearform_1_1TrilinearGaussQuadratureStrategy_1_1TrilinearGaussQuadratureStrategy =
+[
+    [ "computeTrilinearFormEntry", "classpython_1_1uq_1_1quadrature_1_1trilinearform_1_1TrilinearGaussQuadratureStrategy_1_1TrilinearGaussQuadratureStrategy.html#a7d163ed15360be57fb79cb86c7c345e4", null ]
+];

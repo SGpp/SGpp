@@ -1,0 +1,25 @@
+var classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer =
+[
+    [ "LeastSquaresOptimizer", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#a826f653b8b5bdde70bb1797a5caac934", null ],
+    [ "LeastSquaresOptimizer", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#aa14fc5a159caf29eb13548260c2ece52", null ],
+    [ "~LeastSquaresOptimizer", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#a6a84dcdf2e00f752b9f987c754547da1", null ],
+    [ "clone", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#af71e5bdf685f9267ad0e82d09af87fe0", null ],
+    [ "getHistoryOfOptimalPoints", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#a20de9e50190bce43f6ce2ce08c65dca1", null ],
+    [ "getHistoryOfOptimalValues", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#a7c3b4fa53903eedbe8eb6cbddc138755", null ],
+    [ "getN", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#aaa0c84173c93d37266aa889a1f4ecfcb", null ],
+    [ "getOptimalPoint", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#addf831850f98d4e79ac8b87c02d2a10a", null ],
+    [ "getOptimalValue", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#a6aa33f68566691e1fa5b61d0d443e4a1", null ],
+    [ "getPhiFunction", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#ac818a18b9c5c175d934dc7bc2e6426a1", null ],
+    [ "getStartingPoint", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#a9a8e55c9bc571c5b2298e6ff01e1ce8c", null ],
+    [ "optimize", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#a52c69f9e37fe822cec8cd3fba44f42f7", null ],
+    [ "setN", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#af5691355d4897d745aec747d69e1ec48", null ],
+    [ "setPhiFunction", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#a425bd02a8a0467208fc47c6759c2b95f", null ],
+    [ "setStartingPoint", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#a50c9b2abff4f610347000ac8afd0acd6", null ],
+    [ "fHist", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#ad3c4f47702cd3002d0c642692fecf3b9", null ],
+    [ "fOpt", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#a199265ab8d885fc87c2322d6ab2b595f", null ],
+    [ "N", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#aafbec57532b7cbceceeed893d5666d93", null ],
+    [ "phi", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#a0a66ed1ae68348fffa7c7811e38a6611", null ],
+    [ "x0", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#a3af37c9d2025f7be37713c44020062f4", null ],
+    [ "xHist", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#ae1f8f66cf76bc63b60d468c733b50da2", null ],
+    [ "xOpt", "classsgpp_1_1optimization_1_1optimizer_1_1LeastSquaresOptimizer.html#a3e72e92cb55cb763d0aa00c22a2b436c", null ]
+];

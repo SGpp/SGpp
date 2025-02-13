@@ -1,0 +1,5 @@
+var namespacepython_1_1uq_1_1quadrature_1_1trilinearform =
+[
+    [ "TrilinearGaussQuadratureStrategy", "namespacepython_1_1uq_1_1quadrature_1_1trilinearform_1_1TrilinearGaussQuadratureStrategy.html", "namespacepython_1_1uq_1_1quadrature_1_1trilinearform_1_1TrilinearGaussQuadratureStrategy" ],
+    [ "TrilinearQuadratureStrategy", "namespacepython_1_1uq_1_1quadrature_1_1trilinearform_1_1TrilinearQuadratureStrategy.html", "namespacepython_1_1uq_1_1quadrature_1_1trilinearform_1_1TrilinearQuadratureStrategy" ]
+];

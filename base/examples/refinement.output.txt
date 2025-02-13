@@ -1,8 +1,0 @@
-dimensionality:                   2
-number of initial grid points:    17
-length of alpha vector:           17
-refinement step 1, new grid size: 21
-refinement step 2, new grid size: 24
-refinement step 3, new grid size: 27
-refinement step 4, new grid size: 29
-refinement step 5, new grid size: 33

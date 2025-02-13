@@ -1,0 +1,4 @@
+var OperationRosenblattTransformationBsplineClenshawCurtis_8hpp =
+[
+    [ "sgpp::datadriven::OperationRosenblattTransformationBsplineClenshawCurtis", "classsgpp_1_1datadriven_1_1OperationRosenblattTransformationBsplineClenshawCurtis.html", "classsgpp_1_1datadriven_1_1OperationRosenblattTransformationBsplineClenshawCurtis" ]
+];

@@ -1,0 +1,4 @@
+var OperationInverseRosenblattTransformation1DModBspline_8hpp =
+[
+    [ "sgpp::datadriven::OperationInverseRosenblattTransformation1DModBspline", "classsgpp_1_1datadriven_1_1OperationInverseRosenblattTransformation1DModBspline.html", "classsgpp_1_1datadriven_1_1OperationInverseRosenblattTransformation1DModBspline" ]
+];

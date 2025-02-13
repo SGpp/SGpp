@@ -1,0 +1,28 @@
+var dir_18f2f3875076eb1ac17bdcbd31801f3a =
+[
+    [ "KernelSourceBuilderBase.hpp", "KernelSourceBuilderBase_8hpp.html", "KernelSourceBuilderBase_8hpp" ],
+    [ "LinearLoadBalancer.hpp", "LinearLoadBalancer_8hpp.html", "LinearLoadBalancer_8hpp" ],
+    [ "LinearLoadBalancerMultiPlatform.hpp", "LinearLoadBalancerMultiPlatform_8hpp.html", "LinearLoadBalancerMultiPlatform_8hpp" ],
+    [ "OCLBufferWrapperSD.hpp", "OCLBufferWrapperSD_8hpp.html", "OCLBufferWrapperSD_8hpp" ],
+    [ "OCLClonedBuffer.cpp", "OCLClonedBuffer_8cpp.html", null ],
+    [ "OCLClonedBuffer.hpp", "OCLClonedBuffer_8hpp.html", "OCLClonedBuffer_8hpp" ],
+    [ "OCLClonedBufferMultiPlatform.cpp", "OCLClonedBufferMultiPlatform_8cpp.html", null ],
+    [ "OCLClonedBufferMultiPlatform.hpp", "OCLClonedBufferMultiPlatform_8hpp.html", "OCLClonedBufferMultiPlatform_8hpp" ],
+    [ "OCLConfigurationParameters.cpp", "OCLConfigurationParameters_8cpp.html", null ],
+    [ "OCLConfigurationParameters.hpp", "OCLConfigurationParameters_8hpp.html", "OCLConfigurationParameters_8hpp" ],
+    [ "OCLDevice.hpp", "OCLDevice_8hpp.html", "OCLDevice_8hpp" ],
+    [ "OCLManager.cpp", "OCLManager_8cpp.html", null ],
+    [ "OCLManager.hpp", "OCLManager_8hpp.html", "OCLManager_8hpp" ],
+    [ "OCLManagerMultiPlatform.cpp", "OCLManagerMultiPlatform_8cpp.html", null ],
+    [ "OCLManagerMultiPlatform.hpp", "OCLManagerMultiPlatform_8hpp.html", "OCLManagerMultiPlatform_8hpp" ],
+    [ "OCLOperationConfiguration.cpp", "OCLOperationConfiguration_8cpp.html", null ],
+    [ "OCLOperationConfiguration.hpp", "OCLOperationConfiguration_8hpp.html", "OCLOperationConfiguration_8hpp" ],
+    [ "OCLPlatformWrapper.cpp", "OCLPlatformWrapper_8cpp.html", null ],
+    [ "OCLPlatformWrapper.hpp", "OCLPlatformWrapper_8hpp.html", "OCLPlatformWrapper_8hpp" ],
+    [ "OCLStretchedBuffer.cpp", "OCLStretchedBuffer_8cpp.html", null ],
+    [ "OCLStretchedBuffer.hpp", "OCLStretchedBuffer_8hpp.html", "OCLStretchedBuffer_8hpp" ],
+    [ "OCLStretchedBufferMultiPlatform.cpp", "OCLStretchedBufferMultiPlatform_8cpp.html", null ],
+    [ "OCLStretchedBufferMultiPlatform.hpp", "OCLStretchedBufferMultiPlatform_8hpp.html", "OCLStretchedBufferMultiPlatform_8hpp" ],
+    [ "OCLZeroCopyBuffer.cpp", "OCLZeroCopyBuffer_8cpp.html", null ],
+    [ "OCLZeroCopyBuffer.hpp", "OCLZeroCopyBuffer_8hpp.html", "OCLZeroCopyBuffer_8hpp" ]
+];

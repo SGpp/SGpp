@@ -1,0 +1,4 @@
+var namespacepython_1_1uq_1_1sampler_1_1asgc_1_1ASGCSamplerStopPolicy =
+[
+    [ "ASGCSamplerStopPolicy", "classpython_1_1uq_1_1sampler_1_1asgc_1_1ASGCSamplerStopPolicy_1_1ASGCSamplerStopPolicy.html", "classpython_1_1uq_1_1sampler_1_1asgc_1_1ASGCSamplerStopPolicy_1_1ASGCSamplerStopPolicy" ]
+];

@@ -1,0 +1,4 @@
+var OperationEvalPartialDerivativeModWeaklyFundamentalNakSplineNaive_8hpp =
+[
+    [ "sgpp::base::OperationEvalPartialDerivativeModWeaklyFundamentalNakSplineNaive", "classsgpp_1_1base_1_1OperationEvalPartialDerivativeModWeaklyFundamentalNakSplineNaive.html", "classsgpp_1_1base_1_1OperationEvalPartialDerivativeModWeaklyFundamentalNakSplineNaive" ]
+];

@@ -1,0 +1,4 @@
+var OperationRosenblattTransformationPolyClenshawCurtisBoundary_8hpp =
+[
+    [ "sgpp::datadriven::OperationRosenblattTransformationPolyClenshawCurtisBoundary", "classsgpp_1_1datadriven_1_1OperationRosenblattTransformationPolyClenshawCurtisBoundary.html", "classsgpp_1_1datadriven_1_1OperationRosenblattTransformationPolyClenshawCurtisBoundary" ]
+];

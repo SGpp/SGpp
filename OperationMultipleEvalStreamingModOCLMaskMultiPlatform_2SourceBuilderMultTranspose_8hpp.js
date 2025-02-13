@@ -1,0 +1,4 @@
+var OperationMultipleEvalStreamingModOCLMaskMultiPlatform_2SourceBuilderMultTranspose_8hpp =
+[
+    [ "sgpp::datadriven::StreamingModOCLMaskMultiPlatform::SourceBuilderMultTranspose< T >", "classsgpp_1_1datadriven_1_1StreamingModOCLMaskMultiPlatform_1_1SourceBuilderMultTranspose.html", "classsgpp_1_1datadriven_1_1StreamingModOCLMaskMultiPlatform_1_1SourceBuilderMultTranspose" ]
+];

@@ -1,0 +1,4 @@
+var OperationEvalPartialDerivativeModBsplineClenshawCurtisNaive_8hpp =
+[
+    [ "sgpp::base::OperationEvalPartialDerivativeModBsplineClenshawCurtisNaive", "classsgpp_1_1base_1_1OperationEvalPartialDerivativeModBsplineClenshawCurtisNaive.html", "classsgpp_1_1base_1_1OperationEvalPartialDerivativeModBsplineClenshawCurtisNaive" ]
+];

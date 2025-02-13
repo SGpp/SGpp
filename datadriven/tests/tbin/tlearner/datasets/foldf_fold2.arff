@@ -1,7 +1,0 @@
-@relation foldf_test_set
-@attribute x0 numeric
-@attribute class numeric
-@data
-6, 2
-7, 1
-8, 0

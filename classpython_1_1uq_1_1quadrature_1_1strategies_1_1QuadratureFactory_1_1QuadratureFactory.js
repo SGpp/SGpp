@@ -1,0 +1,4 @@
+var classpython_1_1uq_1_1quadrature_1_1strategies_1_1QuadratureFactory_1_1QuadratureFactory =
+[
+    [ "findQuadratureStrategyByMeasure", "classpython_1_1uq_1_1quadrature_1_1strategies_1_1QuadratureFactory_1_1QuadratureFactory.html#a3e233fd866483203cf714fc40c069d06", null ]
+];

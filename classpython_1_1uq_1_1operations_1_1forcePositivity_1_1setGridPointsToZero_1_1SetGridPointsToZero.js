@@ -1,0 +1,4 @@
+var classpython_1_1uq_1_1operations_1_1forcePositivity_1_1setGridPointsToZero_1_1SetGridPointsToZero =
+[
+    [ "computeHierarchicalCoefficients", "classpython_1_1uq_1_1operations_1_1forcePositivity_1_1setGridPointsToZero_1_1SetGridPointsToZero.html#a09a061fbecbce3dce12ca52262b9b5bf", null ]
+];

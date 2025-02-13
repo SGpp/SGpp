@@ -1,0 +1,26 @@
+var classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution =
+[
+    [ "DifferentialEvolution", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#a8e43959430d1c50beaf6ce29d128d52a", null ],
+    [ "DifferentialEvolution", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#abefeedc741d51b0c1fe557abb1d4b40b", null ],
+    [ "~DifferentialEvolution", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#a6adfb0c60cf5acf14a95696053e4d979", null ],
+    [ "clone", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#aa3d88e0f2c721749753cf061ecdb749e", null ],
+    [ "getAvgImprovementThreshold", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#aa3b1daf269f43055a4d447fcbe987d20", null ],
+    [ "getCrossoverProbability", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#aa81e3e13ad0eaed86ad40dc9140e2e6a", null ],
+    [ "getIdleGenerationsCount", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#addc6d67dad1bce2cf2bad44187087826", null ],
+    [ "getMaxDistanceThreshold", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#af7714f9627140ed3adfb524cd76e0678", null ],
+    [ "getPopulationSize", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#a8332a82530c1c4d7ca9f91ce4e53437a", null ],
+    [ "getScalingFactor", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#aec9918f1cafbb688f66c8fe815cdfae3", null ],
+    [ "optimize", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#ae04b244f26d6dfaee4a2ebd5203852fc", null ],
+    [ "setAvgImprovementThreshold", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#a729b8645eb3b5dcb4bb62c3d353d9e02", null ],
+    [ "setCrossoverProbability", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#a06d16addc640b430036f67e7f30d3c81", null ],
+    [ "setIdleGenerationsCount", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#ad9ac58e2d33ef7558adb23e0768559e8", null ],
+    [ "setMaxDistanceThreshold", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#a501c0f7d7007f8b710f17b81c2222979", null ],
+    [ "setPopulationSize", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#a6c05f2ed1b3256f03e7fae2db63f264e", null ],
+    [ "setScalingFactor", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#a7ec9f99ab41450d2accac497d27c0bde", null ],
+    [ "avgImprovementThreshold", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#afd966166311a007b6c0138f328dead0c", null ],
+    [ "crossoverProbability", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#abcdce9187f9287a6eafc2cd2a1c0fca7", null ],
+    [ "idleGenerationsCount", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#a52400f778ebb14c677d956d6e2f98a12", null ],
+    [ "maxDistanceThreshold", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#a0880ad8f4106f72fce625884bf5baef5", null ],
+    [ "populationSize", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#a9fa5826f9fbf4b0b7af5389e64e68fe2", null ],
+    [ "scalingFactor", "classsgpp_1_1optimization_1_1optimizer_1_1DifferentialEvolution.html#ad0ed19568fd111a92f9bc94fec1b9fae", null ]
+];

@@ -1,9 +1,0 @@
-#!/bin/bash -l
-#SBATCH --job-name="%s"
-#SBATCH --nodes=%i
-#SBATCH --ntasks-per-node=1
-#SBATCH --time=%s
-#SBATCH --constraint=gpu,gpumodedefault
-#SBATCH --mail-user=David.Pfander@ipvs.uni-stuttgart.de
-
-srun ./mpi_examples MPIConf.cfg %s 8

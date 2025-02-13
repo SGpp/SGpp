@@ -1,0 +1,4 @@
+var OperationEvalGradientWeaklyFundamentalSplineBoundaryNaive_8hpp =
+[
+    [ "sgpp::base::OperationEvalGradientWeaklyFundamentalSplineBoundaryNaive", "classsgpp_1_1base_1_1OperationEvalGradientWeaklyFundamentalSplineBoundaryNaive.html", "classsgpp_1_1base_1_1OperationEvalGradientWeaklyFundamentalSplineBoundaryNaive" ]
+];

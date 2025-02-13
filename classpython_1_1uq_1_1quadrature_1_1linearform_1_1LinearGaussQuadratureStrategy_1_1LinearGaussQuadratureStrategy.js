@@ -1,0 +1,6 @@
+var classpython_1_1uq_1_1quadrature_1_1linearform_1_1LinearGaussQuadratureStrategy_1_1LinearGaussQuadratureStrategy =
+[
+    [ "computeLinearFormEntry", "classpython_1_1uq_1_1quadrature_1_1linearform_1_1LinearGaussQuadratureStrategy_1_1LinearGaussQuadratureStrategy.html#a8456d8aabcdce260f114125441640fca", null ],
+    [ "computeLinearFormEntryForBsplines", "classpython_1_1uq_1_1quadrature_1_1linearform_1_1LinearGaussQuadratureStrategy_1_1LinearGaussQuadratureStrategy.html#abd41baf2f7b5f15f922c0258bad7dd65", null ],
+    [ "computeLinearFormEntryForTwoSegments", "classpython_1_1uq_1_1quadrature_1_1linearform_1_1LinearGaussQuadratureStrategy_1_1LinearGaussQuadratureStrategy.html#aa9803a2831466e0ca511288165eed015", null ]
+];

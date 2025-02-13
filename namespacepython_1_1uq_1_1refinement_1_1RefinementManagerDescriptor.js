@@ -1,0 +1,7 @@
+var namespacepython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor =
+[
+    [ "AdmissibleSetDescriptor", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1AdmissibleSetDescriptor.html", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1AdmissibleSetDescriptor" ],
+    [ "MostPromisingChildrenDescriptor", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1MostPromisingChildrenDescriptor.html", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1MostPromisingChildrenDescriptor" ],
+    [ "RefineCurrentNodesDescriptor", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1RefineCurrentNodesDescriptor.html", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1RefineCurrentNodesDescriptor" ],
+    [ "RefinementManagerDescriptor", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1RefinementManagerDescriptor.html", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1RefinementManagerDescriptor" ]
+];

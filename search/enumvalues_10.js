@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['scalapack_0',['SCALAPACK',['../namespacesgpp_1_1datadriven.html#a844f18258c7a5f257f565682d15dae3ea874dc0eddfdd850f2335e92412d12244',1,'sgpp::datadriven']]],
+  ['scottsrule_1',['SCOTTSRULE',['../namespacesgpp_1_1datadriven.html#ae6678b1f649736b2c91ddcd990c1492bad6290adaf0d5b15438f2cf684eaff7ad',1,'sgpp::datadriven']]],
+  ['sequential_2',['sequential',['../namespacesgpp_1_1datadriven.html#af2e5347e5fb480a78234944d32cc7027a6ec7489017b25b5fff20d353b6d2162e',1,'sgpp::datadriven']]],
+  ['settozero_3',['SetToZero',['../namespacesgpp_1_1datadriven.html#a45a8e2e0d6a237ab82e0364260bb121aa804d9693d4e86991f6d5fdf3a14e35fa',1,'sgpp::datadriven']]],
+  ['shutdown_4',['SHUTDOWN',['../namespacesgpp_1_1datadriven.html#a7fdade95a44c697050ea97fb6297d04fa6312ff4bd1d1129da595ad79a93b88de',1,'sgpp::datadriven']]],
+  ['silvermansrule_5',['SILVERMANSRULE',['../namespacesgpp_1_1datadriven.html#ae6678b1f649736b2c91ddcd990c1492ba8395881a9f339a92dc482c47559423a5',1,'sgpp::datadriven']]],
+  ['simple_6',['SIMPLE',['../namespacesgpp_1_1datadriven.html#ad622a0a106238178faf9e1477bbf2026ae5564829e2f85f6a6873a9d5c4f26d09',1,'sgpp::datadriven']]],
+  ['singleline_7',['SINGLELINE',['../namespacejson.html#ac296254de68b45e1b9bc6b33e05daac4a5ccc7ada71ca65f9f54243b41a74387b',1,'json']]],
+  ['smw_5fchol_8',['SMW_chol',['../namespacesgpp_1_1datadriven.html#a89455881b494b48c943fb6824c2b4c01ac5c7cc5a2012553df973a303c9b1fdc2',1,'sgpp::datadriven']]],
+  ['smw_5fortho_9',['SMW_ortho',['../namespacesgpp_1_1datadriven.html#a89455881b494b48c943fb6824c2b4c01abe5351f9c975a8e7098d4d7780eb56dc',1,'sgpp::datadriven']]],
+  ['squareroot_10',['SquareRoot',['../namespacesgpp_1_1base.html#afaab93fd6c919ef0a46de81f806d9a92ae6c1b4ee758a2636a6eaf99105103c56',1,'sgpp::base']]],
+  ['std_5fpow_11',['STD_POW',['../classsgpp_1_1optimization_1_1IterativeGridGeneratorRitterNovak.html#a1a2bcb38cafb902d62451e0b8b048ee9ad5a9bd1932c8d1b4966b35bd9882726c',1,'sgpp::optimization::IterativeGridGeneratorRitterNovak']]],
+  ['stratified_12',['Stratified',['../namespacesgpp_1_1quadrature.html#a4a0d17759496b89f8d523bfded8ecceba869ce4fc1889d04090370619057e9c93',1,'sgpp::quadrature']]],
+  ['streaming_13',['STREAMING',['../namespacesgpp_1_1datadriven.html#a844f18258c7a5f257f565682d15dae3eab8f87bd0ae829f0fa0fcaa1a0a2bf91e',1,'sgpp::datadriven']]],
+  ['string_14',['STRING',['../namespacejson.html#ac296254de68b45e1b9bc6b33e05daac4a63b588d5559f64f89a416e656880b949',1,'json']]],
+  ['subspacelinear_15',['SUBSPACELINEAR',['../namespacesgpp_1_1datadriven.html#a844f18258c7a5f257f565682d15dae3ea6c7c78f1de7af2b01497b980bd0942b3',1,'sgpp::datadriven']]],
+  ['surplus_16',['surplus',['../namespacesgpp_1_1base.html#aee7c83d256e58a2d9de502fe390e9fdaa9d871689ed38af1067ff396de3189d1d',1,'sgpp::base::Surplus'],['../namespacesgpp_1_1base.html#af78868adf43efbe144bb9ad57cdb1cb8a9d871689ed38af1067ff396de3189d1d',1,'sgpp::base::Surplus']]],
+  ['surplusvolume_17',['surplusvolume',['../namespacesgpp_1_1base.html#aee7c83d256e58a2d9de502fe390e9fdaa576fda5c28603004964d20937bcf803f',1,'sgpp::base::SurplusVolume'],['../namespacesgpp_1_1base.html#af78868adf43efbe144bb9ad57cdb1cb8a576fda5c28603004964d20937bcf803f',1,'sgpp::base::SurplusVolume']]],
+  ['system_5fmatrix_5fdecomposition_18',['SYSTEM_MATRIX_DECOMPOSITION',['../namespacesgpp_1_1datadriven.html#a0ca1d05166e4fc9354289a1d698a2b6caf65ee5f03323a8df5a18deeefca11933',1,'sgpp::datadriven']]]
+];

@@ -1,0 +1,4 @@
+var OperationMultipleHierarchisationModFundamentalSpline_8hpp =
+[
+    [ "sgpp::optimization::OperationMultipleHierarchisationModFundamentalSpline", "classsgpp_1_1optimization_1_1OperationMultipleHierarchisationModFundamentalSpline.html", "classsgpp_1_1optimization_1_1OperationMultipleHierarchisationModFundamentalSpline" ]
+];

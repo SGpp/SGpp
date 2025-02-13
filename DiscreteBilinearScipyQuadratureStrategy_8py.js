@@ -1,0 +1,4 @@
+var DiscreteBilinearScipyQuadratureStrategy_8py =
+[
+    [ "python.uq.quadrature.bilinearform.DiscreteBilinearScipyQuadratureStrategy.DiscreteBilinearScipyQuadratureStrategy", "classpython_1_1uq_1_1quadrature_1_1bilinearform_1_1DiscreteBilinearScipyQuadratureStrategy_1_1Dicd2d81c2e0b3fae5dbe2be290540bc2b.html", "classpython_1_1uq_1_1quadrature_1_1bilinearform_1_1DiscreteBilinearScipyQuadratureStrategy_1_1Dicd2d81c2e0b3fae5dbe2be290540bc2b" ]
+];

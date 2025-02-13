@@ -1,0 +1,8 @@
+var classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearPeriodicBasis_3_01unsigned_01int_00_01unsigned_01int_01_4_01_4 =
+[
+    [ "GetAffectedBasisFunctions", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearPeriodicBasis_3_01unsigned_01int_00_01unsigned_01int_01_4_01_4.html#a93a0a154d69cd9fc3a86b095d37a6739", null ],
+    [ "~GetAffectedBasisFunctions", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearPeriodicBasis_3_01unsigned_01int_00_01unsigned_01int_01_4_01_4.html#a8e35234f9d7072763a063be6774271e6", null ],
+    [ "operator()", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearPeriodicBasis_3_01unsigned_01int_00_01unsigned_01int_01_4_01_4.html#ad6192ec20c05a8f8aa1413f1c0bf02e9", null ],
+    [ "rec", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearPeriodicBasis_3_01unsigned_01int_00_01unsigned_01int_01_4_01_4.html#a2506ef95b64a98bd9a7bb27c118205dd", null ],
+    [ "storage", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearPeriodicBasis_3_01unsigned_01int_00_01unsigned_01int_01_4_01_4.html#a5a92a9f42744344245ca2b5190e2ad73", null ]
+];

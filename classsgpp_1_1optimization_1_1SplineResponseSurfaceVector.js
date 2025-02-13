@@ -1,0 +1,27 @@
+var classsgpp_1_1optimization_1_1SplineResponseSurfaceVector =
+[
+    [ "SplineResponseSurfaceVector", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a79fab8c3e7d8968d4b5e228665e05383", null ],
+    [ "SplineResponseSurfaceVector", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#ac6f357d845ee10b5560d6b71798f3240", null ],
+    [ "~SplineResponseSurfaceVector", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a85eab26050746c8406cc8328da80e494", null ],
+    [ "distributionAdaptive", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#ae38883b8bea45279166fff7700eb95f5", null ],
+    [ "eval", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a4b50d4a7d61ac1e0a3f7f419fdbe0a40", null ],
+    [ "evalJacobian", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a18999fa9c65736f454116ab0ff60ee66", null ],
+    [ "full", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a7e511049a74aee6b0dc3b6acff895df4", null ],
+    [ "getCoefficients", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a1713e9526b46dd5573dfc830e19676f1", null ],
+    [ "getDegree", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a9e6ebed4cbe04bb12cbd8520c9f1d0c2", null ],
+    [ "getGrid", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a07295405e1dfe8814fa2f1bc21add343", null ],
+    [ "getIntegrals", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a40ede4eb2a68bfbd831e8c2df0260d9c", null ],
+    [ "getLowerBounds", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a1302f1d7437d12daae7adbf637a84ccd", null ],
+    [ "getMeans", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#adbd9a3816a71401d0e8895431ce94d41", null ],
+    [ "getSize", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a62c0f1cb6d9d38def308388b613c705d", null ],
+    [ "getUpperBounds", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#aece317c522fbff4807534fa0b1fae650", null ],
+    [ "getVariances", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a8d30ade49d9dece8530bbfba9b2b4434", null ],
+    [ "nextDistributionAdaptiveGrid", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#adbcf47f81684f5a1d6d2468a876012d9", null ],
+    [ "nextSurplusAdaptiveGrid", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#aeb7af8e024eadda26a905ca5b7a74c01", null ],
+    [ "refineDistributionAdaptive", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a8bb8b8162f8592fd28fd80159721f574", null ],
+    [ "refineSurplusAdaptive", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a26e113064c9c12d376894a7864232f86", null ],
+    [ "regular", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#a8e05918258f5cb9f37b460478f7c04c7", null ],
+    [ "regularByPoints", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#ac7149dfc170f1c9e517433d41f948fd6", null ],
+    [ "serializeGrid", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#ad2b122f044d450d56bc35bf5d8b408d0", null ],
+    [ "surplusAdaptive", "classsgpp_1_1optimization_1_1SplineResponseSurfaceVector.html#adc51220fc769da78f559ce2713603d57", null ]
+];

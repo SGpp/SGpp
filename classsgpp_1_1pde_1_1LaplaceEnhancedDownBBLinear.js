@@ -1,0 +1,26 @@
+var classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear =
+[
+    [ "grid_iterator", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#aae49659b3967a72af1b8fd04a8718bfa", null ],
+    [ "LaplaceEnhancedDownBBLinear", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#abf8fac2da4fa433378ee4fe6c5c0b326", null ],
+    [ "~LaplaceEnhancedDownBBLinear", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#ab57507db229ce592448d4327a7ab5a13", null ],
+    [ "operator()", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#a19cd6da4ee8da7ed6c973b10602ad42a", null ],
+    [ "rec", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#aad34205f92de26f0a8e105b7df6dbbdf", null ],
+    [ "rec_GL", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#a41c4da1ee31d35da5a14a14de842f9f9", null ],
+    [ "rec_grad", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#a0860d468a844a9aa11488e18f30ffd4e", null ],
+    [ "rec_LG", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#ab78fa0e6a60a7e29670d973842d5740f", null ],
+    [ "rec_LL", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#a31dff6fe764ac02098bc70398e992f1c", null ],
+    [ "recBB", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#a708b7d714fa758b5fbf8112fb970457c", null ],
+    [ "recBB_GL", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#a3c7bea96c730dac2a1eb2df133c4b7ab", null ],
+    [ "recBB_grad", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#ad95c639d138718008e485f2503414d71", null ],
+    [ "recBB_LG", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#a1904a5e1268df03e1c99dff668f7103f", null ],
+    [ "recBB_LL", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#a67d94c5241095bc67964bdf9c36bc63d", null ],
+    [ "algoDims", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#aa1346a78df1accbbc2cd1f6052f91760", null ],
+    [ "boundingBox", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#ad1ca350ea0b71a776939e56d15a9969f", null ],
+    [ "cur_algo_dim_", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#adeed72253d996e4308cffc2c3b860c43", null ],
+    [ "numAlgoDims_", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#a21ff2993ddc0b0810d1f5d8623fcbd7c", null ],
+    [ "ptr_result_", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#a9067489f28e5410b80d3ef78642d1ba4", null ],
+    [ "ptr_source_", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#a92738826498118fddf77e57a525d46c5", null ],
+    [ "q_", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#adab0f34d486c97f8afa9452adaff1d85", null ],
+    [ "storage", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#a7c99a739ca1285cfe48190c27d474923", null ],
+    [ "t_", "classsgpp_1_1pde_1_1LaplaceEnhancedDownBBLinear.html#a263e301dd5d4b1515ca0ce7e3e58e7ea", null ]
+];

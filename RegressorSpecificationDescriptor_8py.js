@@ -1,0 +1,6 @@
+var RegressorSpecificationDescriptor_8py =
+[
+    [ "python.uq.learner.builder.RegressorSpecificationDescriptor.FoldingDescriptor", "classpython_1_1uq_1_1learner_1_1builder_1_1RegressorSpecificationDescriptor_1_1FoldingDescriptor.html", "classpython_1_1uq_1_1learner_1_1builder_1_1RegressorSpecificationDescriptor_1_1FoldingDescriptor" ],
+    [ "python.uq.learner.builder.RegressorSpecificationDescriptor.FoldingStrategy", "classpython_1_1uq_1_1learner_1_1builder_1_1RegressorSpecificationDescriptor_1_1FoldingStrategy.html", null ],
+    [ "python.uq.learner.builder.RegressorSpecificationDescriptor.RegressorSpecificationDescriptor", "classpython_1_1uq_1_1learner_1_1builder_1_1RegressorSpecificationDescriptor_1_1RegressorSpecificationDescriptor.html", "classpython_1_1uq_1_1learner_1_1builder_1_1RegressorSpecificationDescriptor_1_1RegressorSpecificationDescriptor" ]
+];

@@ -1,0 +1,4 @@
+var namespacepython_1_1uq_1_1estimators_1_1MarginalAnalyticEstimationStrategy =
+[
+    [ "MarginalAnalyticEstimationStrategy", "classpython_1_1uq_1_1estimators_1_1MarginalAnalyticEstimationStrategy_1_1MarginalAnalyticEstimationStrategy.html", "classpython_1_1uq_1_1estimators_1_1MarginalAnalyticEstimationStrategy_1_1MarginalAnalyticEstimationStrategy" ]
+];

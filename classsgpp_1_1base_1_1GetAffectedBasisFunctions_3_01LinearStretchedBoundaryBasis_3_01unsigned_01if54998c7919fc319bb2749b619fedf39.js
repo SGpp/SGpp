@@ -1,0 +1,9 @@
+var classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearStretchedBoundaryBasis_3_01unsigned_01if54998c7919fc319bb2749b619fedf39 =
+[
+    [ "GetAffectedBasisFunctions", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearStretchedBoundaryBasis_3_01unsigned_01if54998c7919fc319bb2749b619fedf39.html#a247f50e201e7fa1c39b870ab4d02fa28", null ],
+    [ "~GetAffectedBasisFunctions", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearStretchedBoundaryBasis_3_01unsigned_01if54998c7919fc319bb2749b619fedf39.html#ab14704f90b56027e561300a75fee0ce0", null ],
+    [ "operator()", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearStretchedBoundaryBasis_3_01unsigned_01if54998c7919fc319bb2749b619fedf39.html#a713922a037871c026ab7f030f815d56e", null ],
+    [ "recBB", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearStretchedBoundaryBasis_3_01unsigned_01if54998c7919fc319bb2749b619fedf39.html#ace4f5e27aba41d6b555c032770951310", null ],
+    [ "storage", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearStretchedBoundaryBasis_3_01unsigned_01if54998c7919fc319bb2749b619fedf39.html#a40cb331dbb4c36114f49215912f9c5d0", null ],
+    [ "stretch", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearStretchedBoundaryBasis_3_01unsigned_01if54998c7919fc319bb2749b619fedf39.html#aa8dc38414f357f47913565a3e665a595", null ]
+];

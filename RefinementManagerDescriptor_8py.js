@@ -1,0 +1,7 @@
+var RefinementManagerDescriptor_8py =
+[
+    [ "python.uq.refinement.RefinementManagerDescriptor.AdmissibleSetDescriptor", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1AdmissibleSetDescriptor.html", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1AdmissibleSetDescriptor" ],
+    [ "python.uq.refinement.RefinementManagerDescriptor.MostPromisingChildrenDescriptor", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1MostPromisingChildrenDescriptor.html", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1MostPromisingChildrenDescriptor" ],
+    [ "python.uq.refinement.RefinementManagerDescriptor.RefineCurrentNodesDescriptor", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1RefineCurrentNodesDescriptor.html", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1RefineCurrentNodesDescriptor" ],
+    [ "python.uq.refinement.RefinementManagerDescriptor.RefinementManagerDescriptor", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1RefinementManagerDescriptor.html", "classpython_1_1uq_1_1refinement_1_1RefinementManagerDescriptor_1_1RefinementManagerDescriptor" ]
+];

@@ -1,7 +1,0 @@
-dimensionality:        2
-number of grid points: 17
-exact integral value:  0.421875
-Monte Carlo value:     0.421298
-Monte Carlo value:     0.421971
-MC value:              0.444917
-MC L2-error:           0.0242639

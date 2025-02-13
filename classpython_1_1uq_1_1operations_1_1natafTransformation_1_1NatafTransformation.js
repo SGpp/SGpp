@@ -1,0 +1,26 @@
+var classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation =
+[
+    [ "__init__", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#af66b3f0ce13c9607c32010cc584ba028", null ],
+    [ "trans_U_to_X", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a3f52322cbf4bf768a47c171d1f71a140", null ],
+    [ "trans_U_to_Z", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a4eb5100a68a8c1e409a556f862547965", null ],
+    [ "trans_X_to_U", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a34fe417d68aea618f8073dffb097af81", null ],
+    [ "trans_X_to_Z", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a4cce651068900242716a785d709f16c8", null ],
+    [ "trans_Z_to_U", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#ac9b426319ab39638e0d8857c84d4fa0a", null ],
+    [ "trans_Z_to_X", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a6ed6a3d4b63ff8b17f1dcc45049a9723", null ],
+    [ "alpha", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#aa036d3f8b51f13bfe17b131875c7d171", null ],
+    [ "b", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#abe08e8ef01b391e6dc4398797eab6175", null ],
+    [ "beta", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a138d1b81487193ea600a20f5dab56bcb", null ],
+    [ "C", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a2d9cb21712ce2a25853bb59907503159", null ],
+    [ "D", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a2c3b824b29e6700ccaf0bc1f9442fdc3", null ],
+    [ "D_inverse", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a0b5f54642348c8e4ac19232fb7579632", null ],
+    [ "dim", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a20165e60ce1da3625cde48f2af8cb73a", null ],
+    [ "L", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a4919c3f81a09fca0b4f7971047fa6f17", null ],
+    [ "L_inverse", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a5a23043240a5a985b0f19c8ffce8e72e", null ],
+    [ "lwr", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#af94bc1d4a71b0d2171e2fbf8a965d552", null ],
+    [ "M", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a8267b097693df65d5f40f8f7148e0a99", null ],
+    [ "normal", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#af8ef7d3412c18921bd3f68149c9c6ed3", null ],
+    [ "S", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a8fd094a9940afda337b91c2373655de4", null ],
+    [ "uniform", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a8d377e606a192ae80bfa3e872b1e4bda", null ],
+    [ "upr", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#abbdf0b98b26e1ce848b4b1c019666b6b", null ],
+    [ "x", "classpython_1_1uq_1_1operations_1_1natafTransformation_1_1NatafTransformation.html#a911a93c5fe5707247ed3033b32d3f596", null ]
+];

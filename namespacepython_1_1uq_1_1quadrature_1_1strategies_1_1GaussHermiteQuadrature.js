@@ -1,0 +1,4 @@
+var namespacepython_1_1uq_1_1quadrature_1_1strategies_1_1GaussHermiteQuadrature =
+[
+    [ "GaussHermiteQuadrature", "classpython_1_1uq_1_1quadrature_1_1strategies_1_1GaussHermiteQuadrature_1_1GaussHermiteQuadrature.html", "classpython_1_1uq_1_1quadrature_1_1strategies_1_1GaussHermiteQuadrature_1_1GaussHermiteQuadrature" ]
+];

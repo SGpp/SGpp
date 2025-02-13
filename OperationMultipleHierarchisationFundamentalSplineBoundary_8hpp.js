@@ -1,0 +1,4 @@
+var OperationMultipleHierarchisationFundamentalSplineBoundary_8hpp =
+[
+    [ "sgpp::optimization::OperationMultipleHierarchisationFundamentalSplineBoundary", "classsgpp_1_1optimization_1_1OperationMultipleHierarchisationFundamentalSplineBoundary.html", "classsgpp_1_1optimization_1_1OperationMultipleHierarchisationFundamentalSplineBoundary" ]
+];

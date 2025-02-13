@@ -1,0 +1,26 @@
+var dir_b82922db35a2bb8dda1cb40cc84fc334 =
+[
+    [ "OperationClusteringOCL", "dir_f142c5991251f2b7f831bc329801ab7b.html", "dir_f142c5991251f2b7f831bc329801ab7b" ],
+    [ "OperationCreateGraphOCL", "dir_82df28695be4a6cb2991c74a1d70d417.html", "dir_82df28695be4a6cb2991c74a1d70d417" ],
+    [ "OperationDensityMultiplicationAVX", "dir_5caccbb5978327847efb36e56ec859ec.html", "dir_5caccbb5978327847efb36e56ec859ec" ],
+    [ "OperationDensityOCLMultiPlatform", "dir_f7eb353e0169a45cec1cdf323f355283.html", "dir_f7eb353e0169a45cec1cdf323f355283" ],
+    [ "OperationMPI", "dir_7c50634176fc783a1da24e5b5306868d.html", "dir_7c50634176fc783a1da24e5b5306868d" ],
+    [ "OperationMultiEvalCuda", "dir_bba0cc87045572ee3a3ff5eccf4d6ad3.html", "dir_bba0cc87045572ee3a3ff5eccf4d6ad3" ],
+    [ "OperationMultiEvalHPX", "dir_ed8cfb52b0f5f72911e95b163595c55d.html", "dir_ed8cfb52b0f5f72911e95b163595c55d" ],
+    [ "OperationMultiEvalModMaskStreaming", "dir_044b3e5571a0cec93ae2fd976b9539fd.html", "dir_044b3e5571a0cec93ae2fd976b9539fd" ],
+    [ "OperationMultiEvalMPI", "dir_520568d1aa5680389bfc3b6dca3b959a.html", "dir_520568d1aa5680389bfc3b6dca3b959a" ],
+    [ "OperationMultiEvalStreaming", "dir_ecb783ba5cf409ebd6532c746dbe6f5e.html", "dir_ecb783ba5cf409ebd6532c746dbe6f5e" ],
+    [ "OperationMultiEvalStreamingBSpline", "dir_3064d2fa4cdb39abf9f0d70890123b16.html", "dir_3064d2fa4cdb39abf9f0d70890123b16" ],
+    [ "OperationMultipleEvalScalapack", "dir_c2825c4634fba8cc3f15b4e8eac44d6b.html", "dir_c2825c4634fba8cc3f15b4e8eac44d6b" ],
+    [ "OperationMultipleEvalStreamingBSplineOCL", "dir_88eab627bec711e6cfe72a828832fa64.html", "dir_88eab627bec711e6cfe72a828832fa64" ],
+    [ "OperationMultipleEvalStreamingModOCLFastMultiPlattform", "dir_1c6e21e1c6ae60e6116cd3fac1a2318f.html", "dir_1c6e21e1c6ae60e6116cd3fac1a2318f" ],
+    [ "OperationMultipleEvalStreamingModOCLMaskMultiPlatform", "dir_d9dc550ee642badf86cff6c61df646a6.html", "dir_d9dc550ee642badf86cff6c61df646a6" ],
+    [ "OperationMultipleEvalStreamingModOCLOpt", "dir_e57a27169e4fc0b278dac4b49e052c49.html", "dir_e57a27169e4fc0b278dac4b49e052c49" ],
+    [ "OperationMultipleEvalStreamingModOCLUnified", "dir_c549bf32b372934312b8fc0cd7a1ded5.html", "dir_c549bf32b372934312b8fc0cd7a1ded5" ],
+    [ "OperationMultipleEvalStreamingOCLMultiPlatform", "dir_f5ce675198b1da47fcf1d095284f9f08.html", "dir_f5ce675198b1da47fcf1d095284f9f08" ],
+    [ "OperationMultipleEvalSubspace", "dir_96226129fd3161a95fc4d2086ac59354.html", "dir_96226129fd3161a95fc4d2086ac59354" ],
+    [ "OperationPiecewiseConstantRegression", "dir_c8d942283035f3fe1c738c6e25c74c26.html", "dir_c8d942283035f3fe1c738c6e25c74c26" ],
+    [ "OperationPruneGraphOCL", "dir_503e67f1906d5e1d246fcd267cf1bfdc.html", "dir_503e67f1906d5e1d246fcd267cf1bfdc" ],
+    [ "simple", "dir_a996f7824db4bb5c9b836cecd0058c78.html", "dir_a996f7824db4bb5c9b836cecd0058c78" ],
+    [ "DatadrivenOperationCommon.hpp", "DatadrivenOperationCommon_8hpp.html", "DatadrivenOperationCommon_8hpp" ]
+];

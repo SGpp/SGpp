@@ -1,0 +1,7 @@
+var classpython_1_1uq_1_1quadrature_1_1bilinearform_1_1BilinearGaussQuadratureStrategy_1_1BilinearGaussQuadratureStrategy =
+[
+    [ "computeBilinearFormEntry", "classpython_1_1uq_1_1quadrature_1_1bilinearform_1_1BilinearGaussQuadratureStrategy_1_1BilinearGaussQuadratureStrategy.html#aeec2223adff4cc2727026ede7dca4c31", null ],
+    [ "computeBilinearFormEntryForBsplines", "classpython_1_1uq_1_1quadrature_1_1bilinearform_1_1BilinearGaussQuadratureStrategy_1_1BilinearGaussQuadratureStrategy.html#a0db553b95ad2bd0afc962ea284e799c4", null ],
+    [ "computeBilinearFormEntryForTwoSegments", "classpython_1_1uq_1_1quadrature_1_1bilinearform_1_1BilinearGaussQuadratureStrategy_1_1BilinearGaussQuadratureStrategy.html#a979b5798777349cdc3ba9200118b97f9", null ],
+    [ "getBsplineSupport", "classpython_1_1uq_1_1quadrature_1_1bilinearform_1_1BilinearGaussQuadratureStrategy_1_1BilinearGaussQuadratureStrategy.html#ab4b193e162a32a802e1622936a66d1c9", null ]
+];

@@ -1,0 +1,4 @@
+var OperationInverseRosenblattTransformation1DBsplineBoundary_8hpp =
+[
+    [ "sgpp::datadriven::OperationInverseRosenblattTransformation1DBsplineBoundary", "classsgpp_1_1datadriven_1_1OperationInverseRosenblattTransformation1DBsplineBoundary.html", "classsgpp_1_1datadriven_1_1OperationInverseRosenblattTransformation1DBsplineBoundary" ]
+];

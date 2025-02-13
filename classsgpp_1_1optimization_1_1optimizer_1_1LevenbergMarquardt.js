@@ -1,0 +1,25 @@
+var classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt =
+[
+    [ "LevenbergMarquardt", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a610583f74eee0835283f9fb034996bb0", null ],
+    [ "LevenbergMarquardt", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a2de51102b3d2b19865c7e913b62f365c", null ],
+    [ "LevenbergMarquardt", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a93ea54dd1ea5545b504ba3a7b3abbf3d", null ],
+    [ "~LevenbergMarquardt", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a164580fdb3ff68bc2a4c6149b4653e86", null ],
+    [ "clone", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#ad399f7626b07da043c9ae1a455f9be17", null ],
+    [ "getAcceptanceThreshold", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a48b515fe823bfd1817e266c4349c0300", null ],
+    [ "getEffectivenessThreshold", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#ab072fafe874ae14691bfb1c8be2107c9", null ],
+    [ "getInitialDamping", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#aca8e8d68a0068b71c27e1d6675366403", null ],
+    [ "getPhiGradient", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a223e9c30204161e662e44c0618ad0acb", null ],
+    [ "getTolerance", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a20d4125ec34ac4038b8c4e50a56810ca", null ],
+    [ "optimize", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a0bb5bd3a26b5c2c4553ac9910c9cd764", null ],
+    [ "setAcceptanceThreshold", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#ad7ba3c1cae1dd7df973171996ebbb1e0", null ],
+    [ "setEffectivenessThreshold", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a1b39757972d58ffa93c306b7ec8b797a", null ],
+    [ "setInitialDamping", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a5c8908e03d5a251bc4aabb52eb878081", null ],
+    [ "setTolerance", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#af980b38a45ee92c43d65ea197f99d5bb", null ],
+    [ "beta0", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#ae95edd6c438d10f8ccc5071bb6618d29", null ],
+    [ "beta1", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#af7c1c4c4836e5a007980644374205846", null ],
+    [ "defaultSleSolver", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a05c123441965fae0b5682f65d364cac1", null ],
+    [ "mu0", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a4347c25f07bf92c8deecc94b1f1b3bec", null ],
+    [ "phiGradient", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#aa1d62bb4f3155d910378fe60fffab8e7", null ],
+    [ "sleSolver", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a94e2d7f5e73d8f59c3b1838b4eb4fa3e", null ],
+    [ "tol", "classsgpp_1_1optimization_1_1optimizer_1_1LevenbergMarquardt.html#a398dc0a28021a0cf5ad96bbd3fab0369", null ]
+];

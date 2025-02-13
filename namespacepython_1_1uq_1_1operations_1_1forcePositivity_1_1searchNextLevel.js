@@ -1,0 +1,4 @@
+var namespacepython_1_1uq_1_1operations_1_1forcePositivity_1_1searchNextLevel =
+[
+    [ "SearchLevelWiseForCandidates", "classpython_1_1uq_1_1operations_1_1forcePositivity_1_1searchNextLevel_1_1SearchLevelWiseForCandidates.html", "classpython_1_1uq_1_1operations_1_1forcePositivity_1_1searchNextLevel_1_1SearchLevelWiseForCandidates" ]
+];

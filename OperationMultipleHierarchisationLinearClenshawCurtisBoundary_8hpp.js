@@ -1,0 +1,4 @@
+var OperationMultipleHierarchisationLinearClenshawCurtisBoundary_8hpp =
+[
+    [ "sgpp::optimization::OperationMultipleHierarchisationLinearClenshawCurtisBoundary", "classsgpp_1_1optimization_1_1OperationMultipleHierarchisationLinearClenshawCurtisBoundary.html", "classsgpp_1_1optimization_1_1OperationMultipleHierarchisationLinearClenshawCurtisBoundary" ]
+];

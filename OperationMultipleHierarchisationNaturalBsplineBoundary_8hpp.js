@@ -1,0 +1,4 @@
+var OperationMultipleHierarchisationNaturalBsplineBoundary_8hpp =
+[
+    [ "sgpp::optimization::OperationMultipleHierarchisationNaturalBsplineBoundary", "classsgpp_1_1optimization_1_1OperationMultipleHierarchisationNaturalBsplineBoundary.html", "classsgpp_1_1optimization_1_1OperationMultipleHierarchisationNaturalBsplineBoundary" ]
+];

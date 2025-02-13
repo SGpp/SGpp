@@ -1,0 +1,4 @@
+var classpython_1_1uq_1_1estimators_1_1PiecewiseConstantIntegralStrategy_1_1PiecewiseConstantIntegralStrategy =
+[
+    [ "estimate", "classpython_1_1uq_1_1estimators_1_1PiecewiseConstantIntegralStrategy_1_1PiecewiseConstantIntegralStrategy.html#a12a580d4a6df7c16a960999592e88a01", null ]
+];

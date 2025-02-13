@@ -1,0 +1,4 @@
+var OperationInverseRosenblattTransformation1DPolyBoundary_8hpp =
+[
+    [ "sgpp::datadriven::OperationInverseRosenblattTransformation1DPolyBoundary", "classsgpp_1_1datadriven_1_1OperationInverseRosenblattTransformation1DPolyBoundary.html", "classsgpp_1_1datadriven_1_1OperationInverseRosenblattTransformation1DPolyBoundary" ]
+];

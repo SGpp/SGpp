@@ -1,0 +1,7 @@
+var classsgpp_1_1datadriven_1_1OperationInverseRosenblattTransformation1DPolyClenshawCurtisBoundary =
+[
+    [ "OperationInverseRosenblattTransformation1DPolyClenshawCurtisBoundary", "classsgpp_1_1datadriven_1_1OperationInverseRosenblattTransformation1DPolyClenshawCurtisBoundary.html#a48b4b9fa6e95a3fba02a90d6a9248bcf", null ],
+    [ "~OperationInverseRosenblattTransformation1DPolyClenshawCurtisBoundary", "classsgpp_1_1datadriven_1_1OperationInverseRosenblattTransformation1DPolyClenshawCurtisBoundary.html#abd9e8c1f02e688c07ec51164bef28fbf", null ],
+    [ "doTransformation1D", "classsgpp_1_1datadriven_1_1OperationInverseRosenblattTransformation1DPolyClenshawCurtisBoundary.html#a2077f8d1652865be2b587157a7818641", null ],
+    [ "grid", "classsgpp_1_1datadriven_1_1OperationInverseRosenblattTransformation1DPolyClenshawCurtisBoundary.html#a186aba50a369f34cff6cecfa94254cfc", null ]
+];

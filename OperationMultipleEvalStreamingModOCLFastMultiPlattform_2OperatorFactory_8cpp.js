@@ -1,0 +1,4 @@
+var OperationMultipleEvalStreamingModOCLFastMultiPlattform_2OperatorFactory_8cpp =
+[
+    [ "createStreamingModOCLFastMultiPlatformConfigured", "OperationMultipleEvalStreamingModOCLFastMultiPlattform_2OperatorFactory_8cpp.html#a0ab2a548033b8164182b02d4bb22791d", null ]
+];

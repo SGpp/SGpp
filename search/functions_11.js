@@ -1,0 +1,9 @@
+var searchData=
+[
+  ['qrdecomposition_0',['QRDecomposition',['../namespacesgpp_1_1optimization_1_1math.html#ae9e3b69b52ff1f268a1576792b253957',1,'sgpp::optimization::math']]],
+  ['quad_1',['quad',['../classpython_1_1uq_1_1quadrature_1_1HashQuadrature_1_1HashQuadrature.html#a82fd0bc1970b700cfa13cfda3905bf60',1,'python.uq.quadrature.HashQuadrature.HashQuadrature.quad()'],['../classpython_1_1uq_1_1quadrature_1_1strategies_1_1QuadratureStrategy_1_1QuadratureStrategy.html#a151c9f99aff4158237a82435841c5a56',1,'python.uq.quadrature.strategies.QuadratureStrategy.QuadratureStrategy.quad()'],['../namespacepython_1_1plotDeltas3d.html#aa7b772fa79db8f40bc7d009af7013643',1,'python.plotDeltas3d.quad()'],['../namespacepython_1_1uq_1_1quadrature_1_1full__grid.html#a57029d0ba0a191ba77c0692a5f61ab96',1,'python.uq.quadrature.full_grid.quad()']]],
+  ['quadrule1d_2',['QuadRule1D',['../classsgpp_1_1base_1_1QuadRule1D.html#a472ba5840a5c0577b07da3046bb31bbc',1,'sgpp::base::QuadRule1D']]],
+  ['quasigaussianfuzzynumber_3',['quasigaussianfuzzynumber',['../classsgpp_1_1optimization_1_1QuasiGaussianFuzzyNumber.html#a2415688bdd7f2229ee5275e294eac887',1,'sgpp::optimization::QuasiGaussianFuzzyNumber::QuasiGaussianFuzzyNumber(double mean, double stdev, double cutoff)'],['../classsgpp_1_1optimization_1_1QuasiGaussianFuzzyNumber.html#a3fddd35209dd22851233e29561c33221',1,'sgpp::optimization::QuasiGaussianFuzzyNumber::QuasiGaussianFuzzyNumber(const QuasiGaussianFuzzyNumber &amp;other)']]],
+  ['queueloadbalancermutex_4',['QueueLoadBalancerMutex',['../classsgpp_1_1base_1_1QueueLoadBalancerMutex.html#ad85c70297178db3f0f80146b2cff53a6',1,'sgpp::base::QueueLoadBalancerMutex']]],
+  ['queueloadbalanceropenmp_5',['QueueLoadBalancerOpenMP',['../classsgpp_1_1base_1_1QueueLoadBalancerOpenMP.html#a63454bdbe8f6a2329a513ce2ef148f5d',1,'sgpp::base::QueueLoadBalancerOpenMP']]]
+];

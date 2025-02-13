@@ -1,0 +1,26 @@
+var structsgpp_1_1datadriven_1_1DataSourceConfig =
+[
+    [ "batchSize_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#aed33a61d7a8c8dbfaf22ecc2b064fade", null ],
+    [ "dataTransformationConfig_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#acacb948a29e0d91b3a1437a0cc82aaae", null ],
+    [ "epochs_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a166069b1b8cc37a2070ad43e673a6704", null ],
+    [ "filePath_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a3ee4750f9637d3dfc5e3bb4f9c2508b6", null ],
+    [ "fileType_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a2e1ef6e65af29b1aedc1e7710f00158b", null ],
+    [ "hasTargets_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a1a1535725bade8dcf861b004a12f051d", null ],
+    [ "isCompressed_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a0136ce7dd2a29a9daad09b0bac08dc4f", null ],
+    [ "numBatches_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a2ba1da386aee196867e398e2e44a16c6", null ],
+    [ "randomSeed_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a33755ad64006e38753e2d0ccc2e16de0", null ],
+    [ "readinClasses_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a6dfeee6e822434579e6a55fcca0adeb2", null ],
+    [ "readinColumns_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a0a13bb0168f27afb46ba25e16e845ea6", null ],
+    [ "readinCutoff_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a495ab30ff80a229904880e36315017ce", null ],
+    [ "shuffling_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a79129b7b97ff5e504d35a69d51731baa", null ],
+    [ "testBatchSize_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a1b0c3117a7acb5808166d52db899187e", null ],
+    [ "testFilePath_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a719cae334134052a904de8641487b3cd", null ],
+    [ "testFileType_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a7eafabac76dfe6645f8e5b2097c1ef3f", null ],
+    [ "testHasTargets_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a28f01e83eafff1be039de1f77dc42e7f", null ],
+    [ "testIsCompressed_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#afb8fa53a83ab70065d9cd9b7a334cb0b", null ],
+    [ "testNumBatches_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a06aec2e9c3579523fa88bda016e1bf34", null ],
+    [ "testReadinClasses_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a4a56b4352728d1aa2f98791908610ef0", null ],
+    [ "testReadinColumns_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a76c3361ba49ec6862c182f5e2a6a5301", null ],
+    [ "testReadinCutoff_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a3a59aa2f45548b29788e421967f8b509", null ],
+    [ "validationPortion_", "structsgpp_1_1datadriven_1_1DataSourceConfig.html#a46bcda1fba0ff9f920b0b57083d041cb", null ]
+];

@@ -1,0 +1,25 @@
+var classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor =
+[
+    [ "__init__", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#ac1f55c17e41fd96efd7865b8e845566b", null ],
+    [ "__getattr__", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#a0bf5f523f16387ce245a85b3708cebf3", null ],
+    [ "doLearningIteration", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#a4ecd67d017081ca0dc140ee0b85bfbbd", null ],
+    [ "evalError", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#a8f3c4d4e438fb05de501dd80d88cc9d2", null ],
+    [ "getL2NormError", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#ab160562855f2e1041db51ecff8066a46", null ],
+    [ "getMaxError", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#a7c2562dc6bb33b94e2a0a37f1433d72a", null ],
+    [ "getMinError", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#aeaee81f97cfe5d220e65baf72ef860cc", null ],
+    [ "learnData", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#a4286731c7f7a7425e5250d0a7a510ba2", null ],
+    [ "learnDataWithFolding", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#a63eb1d90df0847babd4408a20b2fbf9d", null ],
+    [ "learnDataWithTest", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#abb4ed295bcae9e9b4fc305a20f8fdd9a", null ],
+    [ "refineGrid", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#afcfac051c9ab62dcdda0c8972f4f5a24", null ],
+    [ "updateResults", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#aacda04ce02357c0bcbf5e25e278e1a1f", null ],
+    [ "alpha", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#a6a5b4707582684dea7b266e0d19d36b7", null ],
+    [ "dataContainer", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#aaeb7267fddf553209d5f14c9b12ae65f", null ],
+    [ "error", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#a4350c7dc30023a5cde84165a5e9eba6a", null ],
+    [ "errors", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#a8d59c798cbaa819c8e2f5ff74a0bc4ef", null ],
+    [ "grid", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#a479cb6311bdab191d36f8d7b23465228", null ],
+    [ "iteration", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#a96f65d3ebbee19831da5db903b984b05", null ],
+    [ "linearSystem", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#a716dd0e64cba387c78270617ae12b087", null ],
+    [ "specification", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#a7d1b1d66a8f8ddb41f6d9a8702a3af1e", null ],
+    [ "testAccuracy", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#af840ab4fcfc1e84e675270c8fcb5dca0", null ],
+    [ "trainAccuracy", "classpython_1_1uq_1_1learner_1_1Regressor_1_1Regressor.html#ac8741fccd395f0edae5ba653cf9b8499", null ]
+];

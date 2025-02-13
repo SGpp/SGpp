@@ -1,0 +1,25 @@
+var classsgpp_1_1datadriven_1_1LearnerSVM =
+[
+    [ "LearnerSVM", "classsgpp_1_1datadriven_1_1LearnerSVM.html#afdbbd2111dfbb417d63964f47d35940f", null ],
+    [ "~LearnerSVM", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a66e6ebc2035c1975366903b502559a60", null ],
+    [ "createRegularGrid", "classsgpp_1_1datadriven_1_1LearnerSVM.html#aa9f50b1107b6676d833da7b1614e8873", null ],
+    [ "getAccuracy", "classsgpp_1_1datadriven_1_1LearnerSVM.html#ad46409cd96225e1f3b3fb484ec7dce1d", null ],
+    [ "getAccuracy", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a420d1b1504d81387a65f8d5ba3532eb4", null ],
+    [ "getError", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a77ab93db37dd928c55080ceaaba61e68", null ],
+    [ "initialize", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a3b8a39d0cb1b519a4de0b467efe4b76b", null ],
+    [ "predict", "classsgpp_1_1datadriven_1_1LearnerSVM.html#ae560cdebb9c88a0c3e84ef6566d2d5b0", null ],
+    [ "storeResults", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a2e4fa1f451bedcddd40e70326e8eefd5", null ],
+    [ "train", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a5472dd46079341725d9dc9ac3d33a426", null ],
+    [ "adaptivityConfig", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a07580c19821d10c428d04d28731251bd", null ],
+    [ "avgErrors", "classsgpp_1_1datadriven_1_1LearnerSVM.html#ab621280f88c27204a5e9dd9756b1d002", null ],
+    [ "error", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a04841eb57196ee208fd373599c5d8172", null ],
+    [ "grid", "classsgpp_1_1datadriven_1_1LearnerSVM.html#ac686b1294996b3e22f6c27ab43111be8", null ],
+    [ "gridConfig", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a7737427972b237fd7f43dfaa8dc43bce", null ],
+    [ "svm", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a9b73387c77ad516f06a12028896f7cd5", null ],
+    [ "testData", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a1981d7247787bcf6387c495c4ee8fe5d", null ],
+    [ "testLabels", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a8bfabe3e1aec27d995178d65db5ffdf3", null ],
+    [ "trainData", "classsgpp_1_1datadriven_1_1LearnerSVM.html#ac0316b27c6385ea8f7794f23f8fddfd4", null ],
+    [ "trainLabels", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a315f6c84064c4c487b1e006404aa247a", null ],
+    [ "validData", "classsgpp_1_1datadriven_1_1LearnerSVM.html#a67adcaeae1de69a78843372cad1450cd", null ],
+    [ "validLabels", "classsgpp_1_1datadriven_1_1LearnerSVM.html#afd342bed9fae503aaef01baa6644424e", null ]
+];

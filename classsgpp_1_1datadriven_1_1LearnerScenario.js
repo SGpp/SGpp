@@ -1,0 +1,25 @@
+var classsgpp_1_1datadriven_1_1LearnerScenario =
+[
+    [ "LearnerScenario", "classsgpp_1_1datadriven_1_1LearnerScenario.html#a93c89edd166e6770e4463678a4e3c455", null ],
+    [ "LearnerScenario", "classsgpp_1_1datadriven_1_1LearnerScenario.html#a89bc93aa0f61c4308211dba325230614", null ],
+    [ "LearnerScenario", "classsgpp_1_1datadriven_1_1LearnerScenario.html#af84ffe1f620c6a6fadf14d88d74129fe", null ],
+    [ "LearnerScenario", "classsgpp_1_1datadriven_1_1LearnerScenario.html#a2cb86a1bd0a6c59a8d457ab5c5c94185", null ],
+    [ "getAdaptivityConfiguration", "classsgpp_1_1datadriven_1_1LearnerScenario.html#acf54af8b47c255cf01fb6625bc704674", null ],
+    [ "getDatasetFileName", "classsgpp_1_1datadriven_1_1LearnerScenario.html#a3dea3acb12504a92c5a92d6fda2c4b79", null ],
+    [ "getGridConfig", "classsgpp_1_1datadriven_1_1LearnerScenario.html#aeb6dc77986742b31cb0eab9a44dfa6a6", null ],
+    [ "getInternalPrecision", "classsgpp_1_1datadriven_1_1LearnerScenario.html#a77e10198bb965460c2ff0fe0df7e2edf", null ],
+    [ "getLambda", "classsgpp_1_1datadriven_1_1LearnerScenario.html#ad9364d02a7a4b1b2c40c03c7a93a93aa", null ],
+    [ "getSolverConfigurationFinal", "classsgpp_1_1datadriven_1_1LearnerScenario.html#a19949a82a23d6ef237f6917ac0273d03", null ],
+    [ "getSolverConfigurationRefine", "classsgpp_1_1datadriven_1_1LearnerScenario.html#a291611222d60b5913cc6fcb78259124c", null ],
+    [ "getTestsetConfiguration", "classsgpp_1_1datadriven_1_1LearnerScenario.html#ae05c7b508d474c569b5792df27ada73d", null ],
+    [ "hasTestsetConfiguration", "classsgpp_1_1datadriven_1_1LearnerScenario.html#aefce0e453acfd1d36e5654602b1fff43", null ],
+    [ "isInitialized", "classsgpp_1_1datadriven_1_1LearnerScenario.html#a52f2fb8811c19a7d829da773ccb6f86f", null ],
+    [ "setAdaptivityConfiguration", "classsgpp_1_1datadriven_1_1LearnerScenario.html#a06c2a458c9ce1ede71d4fb64e4a55467", null ],
+    [ "setDatasetFileName", "classsgpp_1_1datadriven_1_1LearnerScenario.html#a5e6e6768796b455b0eb8950f9eee1d69", null ],
+    [ "setGridConfig", "classsgpp_1_1datadriven_1_1LearnerScenario.html#ac0edde60d74bda891e4418300637a657", null ],
+    [ "setInternalPrecision", "classsgpp_1_1datadriven_1_1LearnerScenario.html#a19b6eb48f6e6385efd8db5730bf23700", null ],
+    [ "setLambda", "classsgpp_1_1datadriven_1_1LearnerScenario.html#a9e54c4d273a24fa395a91cbde772d99f", null ],
+    [ "setSolverConfigurationFinal", "classsgpp_1_1datadriven_1_1LearnerScenario.html#a7e32080757c1965967358885619957c6", null ],
+    [ "setSolverConfigurationRefine", "classsgpp_1_1datadriven_1_1LearnerScenario.html#af2425562c2dd6e6dc0b8afafa673917b", null ],
+    [ "setTestsetConfiguration", "classsgpp_1_1datadriven_1_1LearnerScenario.html#aa9aa1a1eb6994abc125daafb42edff44", null ]
+];

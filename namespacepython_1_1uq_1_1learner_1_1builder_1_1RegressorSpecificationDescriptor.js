@@ -1,0 +1,6 @@
+var namespacepython_1_1uq_1_1learner_1_1builder_1_1RegressorSpecificationDescriptor =
+[
+    [ "FoldingDescriptor", "classpython_1_1uq_1_1learner_1_1builder_1_1RegressorSpecificationDescriptor_1_1FoldingDescriptor.html", "classpython_1_1uq_1_1learner_1_1builder_1_1RegressorSpecificationDescriptor_1_1FoldingDescriptor" ],
+    [ "FoldingStrategy", "classpython_1_1uq_1_1learner_1_1builder_1_1RegressorSpecificationDescriptor_1_1FoldingStrategy.html", null ],
+    [ "RegressorSpecificationDescriptor", "classpython_1_1uq_1_1learner_1_1builder_1_1RegressorSpecificationDescriptor_1_1RegressorSpecificationDescriptor.html", "classpython_1_1uq_1_1learner_1_1builder_1_1RegressorSpecificationDescriptor_1_1RegressorSpecificationDescriptor" ]
+];

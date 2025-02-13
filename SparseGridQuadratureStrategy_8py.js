@@ -1,0 +1,4 @@
+var SparseGridQuadratureStrategy_8py =
+[
+    [ "python.uq.quadrature.bilinearform.SparseGridQuadratureStrategy.SparseGridQuadratureStrategy", "classpython_1_1uq_1_1quadrature_1_1bilinearform_1_1SparseGridQuadratureStrategy_1_1SparseGridQuadratureStrategy.html", "classpython_1_1uq_1_1quadrature_1_1bilinearform_1_1SparseGridQuadratureStrategy_1_1SparseGridQuadratureStrategy" ]
+];

@@ -1,0 +1,10 @@
+var classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearClenshawCurtisBoundaryBasis_3_01unsignefb37d362b4d04e962fe9f52e2e3f78ce =
+[
+    [ "GetAffectedBasisFunctions", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearClenshawCurtisBoundaryBasis_3_01unsignefb37d362b4d04e962fe9f52e2e3f78ce.html#a8dfcd583fbb073afe0901c6af0d82637", null ],
+    [ "~GetAffectedBasisFunctions", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearClenshawCurtisBoundaryBasis_3_01unsignefb37d362b4d04e962fe9f52e2e3f78ce.html#ad22b4509d89bbf142fa60ea4351e4a07", null ],
+    [ "operator()", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearClenshawCurtisBoundaryBasis_3_01unsignefb37d362b4d04e962fe9f52e2e3f78ce.html#afb983d2eff4fc81edaf835a2a31e7b0a", null ],
+    [ "rec", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearClenshawCurtisBoundaryBasis_3_01unsignefb37d362b4d04e962fe9f52e2e3f78ce.html#a73caee5ab8f0a385c008a4425372eff9", null ],
+    [ "recBB", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearClenshawCurtisBoundaryBasis_3_01unsignefb37d362b4d04e962fe9f52e2e3f78ce.html#ad7ba3e0a1dcc86810a366d120f1693cb", null ],
+    [ "BB", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearClenshawCurtisBoundaryBasis_3_01unsignefb37d362b4d04e962fe9f52e2e3f78ce.html#a88f99246fb9dbd793df4ddcd60046877", null ],
+    [ "storage", "classsgpp_1_1base_1_1GetAffectedBasisFunctions_3_01LinearClenshawCurtisBoundaryBasis_3_01unsignefb37d362b4d04e962fe9f52e2e3f78ce.html#ae0b03fcfc038eace7eaf6ca3298c76d2", null ]
+];
