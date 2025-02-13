@@ -15,9 +15,11 @@ You are invited to use, contribute, discuss, …
 The library is free to use, provided proper credit is given.
 
 For more details, the API documentation, usage examples and tutorials, please visit:
+
 https://sgpp.github.io/SGpp/
 
 More information can also be found at:
+
 http://sgpp.sparsegrids.org
 
 You can find binaries for Linux (deb) and MATLAB support in the
