@@ -443,6 +443,10 @@ if env["RUN_PYTHON_TESTS"]:
     Helper.printWarning("Python tests disabled because SG_PYTHON is disabled.")
 
 if env["COMPILE_BOOST_TESTS"]:
+  # also add the Boost library path to the PATH
+  # so that the Boost test lib can be found when running the tests
+  env["ENV"]["LD_LIBRARY_PATH"] = os.pathsep.join([env["BOOST_LIBRARY_PATH"],
+                                        env["ENV"].get("LD_LIBRARY_PATH", "")])
   builder = Builder(action="./$SOURCE --log_level=test_suite")
   env.Append(BUILDERS={"BoostTest" : builder})
 
