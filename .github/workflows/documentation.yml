@@ -1,0 +1,35 @@
+name: generate documentation
+
+# triggers
+on:
+  push:
+    branches:
+      - master
+      - add_github_pages_doc
+
+jobs:
+  build-documentation:
+    runs-on: ubuntu-latest
+    steps:
+      # checkout repository
+      - name: Checkout sgpp
+        uses: actions/checkout@v4
+        with:
+          path: sgpp
+      # install dependencies
+      - name: Dependancies
+        run: |
+          python -m pip install scons
+          sudo apt update
+          sudo apt-get install -y libboost-test-dev swig doxygen graphviz
+      # SCons
+      - name: SCons
+        run: |
+          cd sgpp
+          scons SG_ALL=1 SG_PYTHON=1 PYDOC=1 doxygen
+      # deploy to github pages
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./sgpp/doc/html
