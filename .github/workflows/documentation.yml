@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - master
-      - add_github_pages_doc
   workflow_dispatch:
 
 jobs:
