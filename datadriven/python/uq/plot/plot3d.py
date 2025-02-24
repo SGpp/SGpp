@@ -18,7 +18,7 @@ from pysgpp.extensions.datadriven.uq.plot.colors import load_default_color_map
 
 def plotDensity3d(U, n=36):
     fig = plt.figure()
-    ax = fig.gca(projection='3d')
+    ax = fig.add_subplot(projection='3d')
     xlim = U.getBounds()[0]
     ylim = U.getBounds()[1]
     x = np.linspace(xlim[0], xlim[1], n + 1, endpoint=True)
@@ -50,7 +50,7 @@ def plotDensity3d(U, n=36):
 def plotGrid3d(grid, grid_points_at=0, ax=None):
     if ax is None:
         fig = plt.figure()
-        ax = fig.gca(projection='3d')
+        ax = fig.add_subplot(projection='3d')
     # get grid points
     gs = grid.getStorage()
     gps = np.zeros([gs.getSize(), 2])
@@ -83,7 +83,7 @@ def plotSG3d(grid, alpha, n=36,
              surface_plot=False,
              xoffset=0.0, yoffset=1.0):
     fig = plt.figure()
-    ax = fig.gca(projection='3d')
+    ax = fig.add_subplot(projection='3d')
     x = np.linspace(0, 1, n + 1, endpoint=True)
     y = np.linspace(0, 1, n + 1, endpoint=True)
     Z = np.zeros((n + 1, n + 1))
@@ -138,7 +138,7 @@ def plotSG3d(grid, alpha, n=36,
 def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=36,
                    z_min=np.Inf, xoffset=0.0, yoffset=1.0):
     fig = plt.figure()
-    ax = fig.gca(projection='3d')
+    ax = fig.add_subplot(projection='3d')
     x = np.linspace(xlim[0], xlim[1], n + 1, endpoint=True)
     y = np.linspace(ylim[0], ylim[1], n + 1, endpoint=True)
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
@@ -199,7 +199,7 @@ def plotKDE3d(values):
 
 def plotError3d(f1, f2, xlim=[0, 1], ylim=[0, 1], n=32):
     fig = plt.figure()
-    ax = fig.gca(projection='3d')
+    ax = fig.add_subplot(projection='3d')
     x = np.linspace(xlim[0], xlim[1], n + 1, endpoint=True)
     y = np.linspace(ylim[0], ylim[1], n + 1, endpoint=True)
     Z = np.zeros((n + 1, n + 1))

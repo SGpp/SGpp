@@ -69,9 +69,9 @@ def processFilePy(path):
     return True
 
   if not (re.match(COPYRIGHT_BANNER, source) or
-          re.match("#!.*?\s*"+COPYRIGHT_BANNER, source) or
-          re.match("# -\*- coding: utf-8 -\*-\s*"+COPYRIGHT_BANNER, source) or
-          re.match("#!.*?\n# -\*- coding: utf-8 -\*-\s*"+COPYRIGHT_BANNER, source)):
+          re.match(r'#!.*?\s*'+COPYRIGHT_BANNER, source) or
+          re.match(r'# -\*- coding: utf-8 -\*-\s*'+COPYRIGHT_BANNER, source) or
+          re.match(r'#!.*?\n# -\*- coding: utf-8 -\*-\s*'+COPYRIGHT_BANNER, source)):
     print(("{}:0: warning: No SG++ copyright message found or existing "
            "copyright message is not the standard SG++ copyright "
            "message.  [legal/copyright] [5]"

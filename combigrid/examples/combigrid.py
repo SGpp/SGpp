@@ -41,7 +41,7 @@ def plotFunction(opEval, surpluses, X):
 
   # actual plotting
   fig = plt.figure(figsize=(6, 6))
-  ax = fig.gca(projection="3d")
+  ax = fig.add_subplot(projection="3d")
   ax.plot_surface(XX0, XX1, YY)
   ax.plot(X[:,0], X[:,1], "k.", zs=f(X[:,0], X[:,1]), ms=10)
 

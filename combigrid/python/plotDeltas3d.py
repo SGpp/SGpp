@@ -87,7 +87,8 @@ try:
             lInfo = {"l_" + str(j): (levels[i][j])
                      for j in range(len(levels[i]))}
             lInfo["delta"] = float(deltas[i])
-            df = df.append(lInfo, ignore_index=True)
+            df_dictionary = pd.DataFrame([lInfo])
+            df = pd.concat([df, df_dictionary], ignore_index=True)
         # drop potential nan values
         df = df.dropna()
         return df
@@ -134,7 +135,7 @@ try:
             axes.set_zlim(0.6, 1+max(range_zero, range_one))
         axes.add_collection3d(collection)
 
-        cbar = canvas.colorbar(scalarMap)
+        cbar = canvas.colorbar(scalarMap, ax=plt.gca())
 
         show()
 
