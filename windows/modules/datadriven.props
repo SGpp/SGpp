@@ -1,0 +1,8 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ModuleDependencies Include="base" />
+    <ModuleDependencies Include="optimization" />
+    <ModuleDependencies Include="solver" />
+    <ModuleDependencies Include="pde" />
+  </ItemGroup>
+</Project>

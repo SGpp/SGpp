@@ -395,6 +395,7 @@ BOOST_AUTO_TEST_CASE(fitScalesGP) {
       kernelrow[i] = genprocess.kernel(npoint.getScaledDistance(initialConfigs[i], scales));
     }
     double mean = genprocess.mean(kernelrow);
+    // Should not be 0!
     double var = genprocess.var(kernelrow, 1.001);
     // std::cout << "Mean: " << mean << " | sqVar: " << sqrt(var) << std::endl;
     std::normal_distribution<double> distribution(mean, var);

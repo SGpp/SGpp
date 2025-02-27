@@ -125,3 +125,16 @@ GTAGS
 custom.py
 gmon.out
 /buildVars.out
+
+# msvc winsgpp
+.vs/
+!windows/tools/dump2def.exe
+!windows/tools/demumble.exe
+*.user
+*.filters
+out/
+packages/
+bin/
+windows/test_results/
+tmpdatabase
+x64

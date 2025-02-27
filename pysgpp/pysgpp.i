@@ -2,23 +2,12 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
-%module(directors="1", moduleimport="from . import _pysgpp_swig") pysgpp_swig
+%module(directors="1") pysgpp_swig
 // %feature("autodoc", "2");
 // %feature("docstring");
 
-// fix needed for MinGW: cmath has to be included before Python.h,
-// otherwise there are g++ errors like "Error: '::hypot' has not been declared"
-%begin %{
-    #include <cmath>
-%}
-
-%begin %{
-#define SWIG_PYTHON_2_UNICODE
-%}
-
 %include "base/src/sgpp/globaldef.hpp"
 
-//%include "std_string.i"
 %include "stl.i"
 %include "std_vector.i"
 %include "std_list.i"

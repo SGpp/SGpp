@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <Import Project="$(SolutionDir)windows\windows_defs.props" />
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{03E32082-9522-498A-9D3A-694E5A4CB2ED}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <IntDir>out\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)lib\$(Configuration)\pysgpp\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>_pysgpp_swig</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>_pysgpp_swig_d</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(WINSGPP_PYTHON3)\Lib\site-packages\numpy\core\include\;$(ModuleSourceDirs);$(WINSGPP_PYTHON3)\include</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(ModuleSingleHeaders)</ForcedIncludeFiles>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <PreBuildEvent>
+      <Command>
+cd $(SolutionDir)
+swig -o pysgpp/pysgpp_wrap.cc -c++ -python -fvirtual -threads -DSG_BASE=1 -DSG_COMBIGRID=1 -DSG_OPTIMIZATION=1 -DSG_PDE=1 -DSG_SOLVER=1 -DSG_DATADRIVEN=1 -DSG_QUADRATURE=1 -py3 pysgpp/pysgpp.i</Command>
+    </PreBuildEvent>
+    <Link>
+      <AdditionalLibraryDirectories>$(WINSGPP_PYTHON3)\libs\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(ModuleStaticLibs);kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+copy $(ProjectDir)pysgpp_swig.py $(SolutionDir)lib\$(Configuration)\pysgpp\pysgpp_swig.py
+copy $(ProjectDir)__init__.py $(SolutionDir)lib\$(Configuration)\pysgpp\__init__.py
+"$(WINSGPP_PYTHON3)\python.exe" -m pip uninstall -y pysgpp
+cd $(SolutionDir)
+"$(WINSGPP_PYTHON3)\python.exe" $(SolutionDir)setup.py clean --all install</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>$(UsedPreprocessorDefs);_DEBUG;SWIGRUNTIME_DEBUG;SWIG_PYTHON_INTERPRETER_NO_DEBUG;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>$(UsedPreprocessorDefs);_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="pysgpp_wrap.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pysgpp_wrap.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="pysgpp.i" />
+    <None Include="pysgpp_swig.py" />
+    <None Include="__init__.py" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

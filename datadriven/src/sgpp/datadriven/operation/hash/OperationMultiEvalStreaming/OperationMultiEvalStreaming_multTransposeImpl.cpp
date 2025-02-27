@@ -481,7 +481,7 @@ void OperationMultiEvalStreaming::multTransposeImpl(
 #endif
 
 #if (!defined(__SSE3__) && !defined(__AVX__)) && !defined(__MIC__) && !defined(__AVX512F__)
-#warning \
+#pragma warning \
     "warning: using fallback implementation for OperationMultiEvalStreaming multTranspose kernel"
 
   for (size_t k = start_index_grid; k < end_index_grid;

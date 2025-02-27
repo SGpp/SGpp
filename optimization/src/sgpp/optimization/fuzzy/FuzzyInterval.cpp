@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <stdexcept>
 
 namespace sgpp {
 namespace optimization {
