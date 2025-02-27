@@ -287,6 +287,27 @@ class DataVector : public std::vector<double> {
   double sum() const;
 
   /**
+   * Returns the sum of all elements squared
+   *
+   * @return The sum of all elements squared
+   */
+  double sumsqr() const;
+
+  /**
+   * Returns the sum of the logarithm of all elements
+   *
+   * @return The sum of the logarithm of all elements
+   */
+  double sumlog() const;
+
+  /**
+   * Returns the sum of the absolute values of all elements
+   *
+   * @return The sum of the absolute values of all elements
+   */
+  double sumabs() const;
+
+  /**
    * calculates the vector's max norm
    *
    * @return the vector's max norm
@@ -341,6 +362,25 @@ class DataVector : public std::vector<double> {
    * @param x Reference to the DataVector
    */
   void axpy(double a, DataVector& x);
+
+  /**
+   * Return sign of single value as integer (-1, 0, 1).
+   *
+   * @param val Value to get the sign of
+   * @return Sign value as integer
+   */
+  //  template <class T>
+  //  inline int sgn(const T& v) {
+  //    return (v > T(0)) - (v < T(0));
+  //  }
+  inline int sgn(const double& v) { return (v > 0.0) - (v < 0.0); }
+
+  /**
+   * Gets signs of vector elements.
+   *
+   * @param vec Reference to another vector
+   */
+  void getSgn(const DataVector& vec);
 
   /**
    * gets a pointer to the data array

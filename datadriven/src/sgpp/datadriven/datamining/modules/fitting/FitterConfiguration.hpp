@@ -33,7 +33,10 @@ enum class FitterType {
   RegressionLeastSquares,
   DensityEstimation,
   DensityRatioEstimation,
+  RelativeDensityRatioEstimation,
   DensityDifferenceEstimation,
+  DensityDerivativeRatioEstimation,
+  DensityDerivativeEstimation,
   Classification
 };
 

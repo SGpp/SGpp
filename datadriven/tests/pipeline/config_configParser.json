@@ -2,7 +2,7 @@
     "dataSource": {
         "filePath": "/path/to/some/file.arff",
         "fileType": "arff",
-        "compression": false,
+        "isCompressed": false,
         "numBatches": 1,
         "batchSize": 0,
         "dataTransformation": {
@@ -21,7 +21,7 @@
         "randomSeed": 37,
         "testFilePath": "/path/to/some/testFile.arff",
         "testFileType": "arff",
-        "testCompression": false,
+        "testIsCompressed": false,
         "testNumBatches": 2,
         "testBatchSize": 16
     },

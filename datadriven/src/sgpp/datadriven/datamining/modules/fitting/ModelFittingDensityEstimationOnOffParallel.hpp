@@ -67,8 +67,8 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the SGDE
-   * approach. Requires only data samples and no targets (since those are irrelevant for the density
-   * estimation whatsoever). This method makes use of parallelization using ScaLAPACK.
+   * approach. Requires only data samples and no targets (since those are irrelevant for the
+   * density estimation whatsoever). This method makes use of parallelization using ScaLAPACK.
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(DataMatrix& dataset) override;
@@ -94,9 +94,9 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
   }
 
   /**
-   * Updates the model based on new data samples (streaming, batch learning). Requires only the data
-   * samples and no targets (since those are irrelevant for the density estimation whatsoever). This
-   * method makes use of parallelization using ScaLAPACK.
+   * Updates the model based on new data samples (streaming, batch learning). Requires only the
+   * data samples and no targets (since those are irrelevant for the density estimation
+   * whatsoever). This method makes use of parallelization using ScaLAPACK.
    * @param samples the new data samples
    */
   void update(DataMatrix& samples) override;

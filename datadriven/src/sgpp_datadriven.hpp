@@ -8,10 +8,12 @@
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostBase.hpp>
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostIdentity.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
-#include <sgpp/datadriven/algorithm/DMSystemMatrixDRE.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrixTwoDatasets.hpp>
 #include <sgpp/datadriven/algorithm/DMWeightMatrix.hpp>
+#include <sgpp/datadriven/algorithm/DensityDerivativeSystemMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DensityDifferenceSystemMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
+
 #include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
@@ -146,12 +148,17 @@
 
 #include <sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
+
+#include <sgpp/datadriven/datamining/builder/MinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
+
+#include <sgpp/datadriven/datamining/builder/DensityDerivativeEstimationMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/DensityDerivativeRatioEstimationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DensityDifferenceEstimationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DensityRatioEstimationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
-#include <sgpp/datadriven/datamining/builder/MinerFactory.hpp>
-#include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/RelativeDensityRatioEstimationMinerFactory.hpp>
 
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 
@@ -186,6 +193,9 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeEstimationCG.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeRatioEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
@@ -194,6 +204,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityRatioEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingRelativeDensityRatioEstimation.hpp>
 
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp>

@@ -8,11 +8,13 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/algorithm/DMSystemMatrixDRE.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrixTwoDatasets.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 
 using sgpp::solver::SLESolver;
@@ -23,13 +25,12 @@ using sgpp::base::DataVector;
 namespace sgpp {
 namespace datadriven {
 
-// TODO(lettrich): allow different refinement techniques.
 /**
- * Fitter object that encapsulates the usage of sparse grid based density ratio estimation, based on
- * the regression model with identity as regularization.
+ * Fitter object that encapsulates the usage of sparse grid based density ratio estimation, based
+ * on the regression model with identity as regularization.
  *
- * Allows usage of different grids, different solvers and different regularization techniques based
- * on the provided configuration objects.
+ * Allows usage of different grids, different solvers and different regularization techniques
+ * based on the provided configuration objects.
  */
 class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
  public:
@@ -81,6 +82,32 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
   void evaluate(DataMatrix &samples, DataVector &results) override;
 
   /**
+   * Computes an approximation of the least squares loss between true and estimated density ratio.
+   * Implemented as: 1 / M_q * Sum f(x_q)^2 - 2 / M_p * Sum f(x_p)
+   * @param samplesP samples of first dataset to evaluate against
+   * @param samplesQ samples of second dataset to evaluate against
+   * @return LS loss approximation
+   */
+  double LeastSquaresLossApprox(DataMatrix &samplesP, DataMatrix &samplesQ) override;
+
+  /**
+   * Computes an approximation of the Kullback-Leibler divergence using the density ratio.
+   * Implemented as: 1 / M_p * Sum log f(x_p)
+   * @param samplesP samples of first dataset to evaluate against
+   * @return PE divergence approximation
+   */
+  double KLDivergenceApprox(DataMatrix &samplesP) override;
+
+  /**
+   * Computes an approximation of the Pearson divergence using the density ratio.
+   * Implemented as: -1/2 * 1 / M_q * Sum f(x_q)^2 + 1 / M_p * Sum f(x_p) - 1/2
+   * @param samplesP samples of first dataset to evaluate against
+   * @param samplesQ samples of second dataset to evaluate against
+   * @return PE divergence approximation
+   */
+  double PEDivergenceApprox(DataMatrix &samplesP, DataMatrix &samplesQ) override;
+
+  /**
    * Resets the state of the entire model
    */
   void reset() override;
@@ -123,26 +150,43 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
 
  private:
   /**
+   * Returns the refinement functor suitable for the model settings.
+   * @return pointer to a refinement functor that suits the model settings
+   */
+  std::unique_ptr<sgpp::base::RefinementFunctor> getRefinementFunctor();
+
+  /**
+   * Returns the refinement functor suitable for the model settings.
+   * @return pointer to a coarsening functor that suits the model settings
+   */
+  std::unique_ptr<sgpp::base::CoarseningFunctor> getCoarseningFunctor();
+
+  /**
    * Count the amount of refinement operations performed on the current dataset.
    */
   size_t refinementsPerformed;
 
-  // TODO(lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should be
-  // const.
+  /**
+   * Initial number of grid points
+   */
+  size_t initialGridSize;
+
+  // TODO(lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should
+  // be const.
   /**
    * Factory function to build the System matrix for density ratio estimation with identity as
    * regularization
    */
-  DMSystemMatrixDRE *buildSystemMatrix(Grid &grid, DataMatrix &trainDatasetP,
-                                       DataMatrix &trainDatasetQ, double lambda,
-                                       OperationMultipleEvalConfiguration &config) const;
+  DMSystemMatrixTwoDatasets *buildSystemMatrix(Grid &grid, DataMatrix &trainDatasetP,
+                                               DataMatrix &trainDatasetQ, double lambda,
+                                               OperationMultipleEvalConfiguration &config) const;
 
   /**
-   * Based on the current dataset and grid, assemble a system of linear equations and solve for the
-   * hierarchical surplus vector alpha.
+   * Based on the current dataset and grid, assemble a system of linear equations and solve for
+   * the hierarchical surplus vector alpha.
    * @param solverConfig: Configuration of the SLESolver (refinement, or final solver).
-   * @param alpha: Reference to a data vector where hierarchical surpluses will be stored into. Make
-   * sure the vector size is equal to the amount of grid points.
+   * @param alpha: Reference to a data vector where hierarchical surpluses will be stored into.
+   * Make sure the vector size is equal to the amount of grid points.
    */
   void assembleSystemAndSolve(const SLESolverConfiguration &solverConfig, DataVector &alpha) const;
 };

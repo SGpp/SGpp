@@ -103,11 +103,13 @@ class DMConfigTools {
     stream_out << "errorBufferSize \t\t" << adaptivityConfig.errorBufferSize_ << std::endl;
     stream_out << "errorMinInterval \t\t" << adaptivityConfig.errorMinInterval_ << std::endl;
     stream_out << "refinementPeriod \t\t" << adaptivityConfig.refinementPeriod_ << std::endl;
-    stream_out << "refinementFunctorType \t\t" << base::RefinementFunctorTypeParser::toString(
-                                                      adaptivityConfig.refinementFunctorType_)
+    stream_out << "refinementFunctorType \t\t"
+               << base::RefinementFunctorTypeParser::toString(
+                      adaptivityConfig.refinementFunctorType_)
                << std::endl;
-    stream_out << "coarseningFunctorType \t\t" << base::CoarseningFunctorTypeParser::toString(
-                                                      adaptivityConfig.coarseningFunctorType_)
+    stream_out << "coarseningFunctorType \t\t"
+               << base::CoarseningFunctorTypeParser::toString(
+                      adaptivityConfig.coarseningFunctorType_)
                << std::endl;
     stream_out << std::boolalpha << "precomputeEvaluations \t\t"
                << adaptivityConfig.precomputeEvaluations_ << std::endl;
@@ -138,8 +140,9 @@ class DMConfigTools {
                            std::ostream& stream_out = std::cout) {
     stream_out << "type \t\t\t\t"
                << DensityEstimationTypeParser::toString(densityEstimationConfig.type_) << std::endl;
-    stream_out << "decomposition \t\t\t" << datadriven::MatrixDecompositionTypeParser::toString(
-                                                densityEstimationConfig.decomposition_)
+    stream_out << "decomposition \t\t\t"
+               << datadriven::MatrixDecompositionTypeParser::toString(
+                      densityEstimationConfig.decomposition_)
                << std::endl;
     stream_out << "useOfflinePermutation \t\t" << std::boolalpha
                << densityEstimationConfig.useOfflinePermutation_ << std::endl;
@@ -153,6 +156,7 @@ class DMConfigTools {
                << std::endl;
     stream_out << "iCholSweepsSolver \t\t" << densityEstimationConfig.iCholSweepsSolver_
                << std::endl;
+    stream_out << "derivDim \t\t" << densityEstimationConfig.derivDim_ << std::endl;
   }
 
   static void dumpToStream(const DatabaseConfiguration& databaseConfig,
@@ -193,7 +197,7 @@ class DMConfigTools {
 
   static void dumpToStream(const LearnerConfiguration& learnerConfig,
                            std::ostream& stream_out = std::cout) {
-    stream_out << "learningRate \t\t" << learnerConfig.learningRate_ << std::endl;
+    stream_out << "forgetRate \t\t" << learnerConfig.forgetRate_ << std::endl;
     stream_out << "usePrior \t\t" << std::boolalpha << learnerConfig.usePrior_ << std::endl;
   }
 

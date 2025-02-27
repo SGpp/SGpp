@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 
@@ -19,23 +19,23 @@ namespace datadriven {
  * Abstract class that defines the virtual class base::OperationMatrix for the density ratio
  * estimation problem
  */
-class DMSystemMatrixDRE : public base::OperationMatrix {
+class DMSystemMatrixTwoDatasets : public base::OperationMatrix {
  protected:
   /// the datasets
-  base::DataMatrix datasetP_;
-  base::DataMatrix datasetQ_;
+  base::DataMatrix datasetP;
+  base::DataMatrix datasetQ;
   /// the lambda, the regularisation parameter
-  double lambda_;
+  double lambda;
   /// time needed for Mult
-  double completeTimeMult_;
+  double completeTimeMult;
   /// time needed only for the computation of mult, interesting on accelerator boards
-  double computeTimeMult_;
+  double computeTimeMult;
   /// time needed for Mult transposed
-  double completeTimeMultTrans_;
+  double completeTimeMultTrans;
   /// time needed only for the computation of mult transposed, interesting on accelerator boards
-  double computeTimeMultTrans_;
+  double computeTimeMultTrans;
   /// Stopwatch needed to determine the durations of mult and mult transposed
-  base::SGppStopwatch* myTimer_;
+  base::SGppStopwatch* myTimer;
 
  public:
   /**
@@ -45,12 +45,13 @@ class DMSystemMatrixDRE : public base::OperationMatrix {
    * @param trainDataQ matrix with training data for second density
    * @param lambda the lambda, the regression parameter
    */
-  DMSystemMatrixDRE(base::DataMatrix& trainDataP, base::DataMatrix& trainDataQ, double lambda);
+  DMSystemMatrixTwoDatasets(base::DataMatrix& trainDataP, base::DataMatrix& trainDataQ,
+                            double lambda);
 
   /**
    * Std-Destructor
    */
-  virtual ~DMSystemMatrixDRE();
+  virtual ~DMSystemMatrixTwoDatasets();
 
   virtual void mult(base::DataVector& alpha, base::DataVector& result) = 0;
 

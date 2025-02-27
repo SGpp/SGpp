@@ -14,6 +14,8 @@
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 
 using sgpp::solver::SLESolver;
@@ -24,13 +26,12 @@ using sgpp::base::DataVector;
 namespace sgpp {
 namespace datadriven {
 
-// TODO(lettrich): allow different refinement techniques.
 /**
  * Fitter object that encapsulates the usage of sparse grid based regression with identity as
  * regularization.
  *
- * Allows usage of different grids, different solvers and different regularization techniques based
- * on the provided configuration objects.
+ * Allows usage of different grids, different solvers and different regularization techniques
+ * based on the provided configuration objects.
  */
 class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
  public:
@@ -123,12 +124,29 @@ class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
 
  private:
   /**
+   * Returns the refinement functor suitable for the model settings.
+   * @return pointer to a refinement functor that suits the model settings
+   */
+  std::unique_ptr<sgpp::base::RefinementFunctor> getRefinementFunctor();
+
+  /**
+   * Returns the refinement functor suitable for the model settings.
+   * @return pointer to a coarsening functor that suits the model settings
+   */
+  std::unique_ptr<sgpp::base::CoarseningFunctor> getCoarseningFunctor();
+
+  /**
    * Count the amount of refinement operations performed on the current dataset.
    */
   size_t refinementsPerformed;
 
-  // TODO(lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should be
-  // const.
+  /**
+   * Initial number of grid points
+   */
+  size_t initialGridSize;
+
+  // TODO(lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should
+  // be const.
   /**
    * Factory function to build the System matrix for least squares regression with identity as
    * regularization.
@@ -137,11 +155,11 @@ class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
                                         OperationMultipleEvalConfiguration &config) const;
 
   /**
-   * based on the current dataset and grid, assemble a system of linear equations and solve for the
-   * hierarchical surplus vector alpha.
+   * based on the current dataset and grid, assemble a system of linear equations and solve for
+   * the hierarchical surplus vector alpha.
    * @param solverConfig: Configuration of the SLESolver (refinement, or final solver).
-   * @param alpha: Reference to a data vector where hierarchical surpluses will be stored into. Make
-   * sure the vector size is equal to the amount of grid points.
+   * @param alpha: Reference to a data vector where hierarchical surpluses will be stored into.
+   * Make sure the vector size is equal to the amount of grid points.
    */
   void assembleSystemAndSolve(const SLESolverConfiguration &solverConfig, DataVector &alpha) const;
 };

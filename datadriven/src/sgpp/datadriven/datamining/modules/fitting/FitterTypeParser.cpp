@@ -25,8 +25,14 @@ FitterType FitterTypeParser::parse(const std::string &input) {
     return FitterType::DensityEstimation;
   } else if (inputLower == "densityratioestimation") {
     return FitterType::DensityRatioEstimation;
+  } else if (inputLower == "relativedensityratioestimation") {
+    return FitterType::RelativeDensityRatioEstimation;
   } else if (inputLower == "densitydifferenceestimation") {
     return FitterType::DensityDifferenceEstimation;
+  } else if (inputLower == "densityderivativeratioestimation") {
+    return FitterType::DensityDerivativeRatioEstimation;
+  } else if (inputLower == "densityderivativeestimation") {
+    return FitterType::DensityDerivativeEstimation;
   } else if (inputLower == "classification") {
     return FitterType::Classification;
   } else {
@@ -42,8 +48,14 @@ const FitterTypeParser::FitterTypeMap_t FitterTypeParser::fitterTypeMap = []() {
       std::make_pair(FitterType::RegressionLeastSquares, "ModelFittingLeastSquares"),
       std::make_pair(FitterType::DensityEstimation, "ModelFittingDensityEstimation"),
       std::make_pair(FitterType::DensityRatioEstimation, "ModelFittingDensityRatioEstimation"),
+      std::make_pair(FitterType::RelativeDensityRatioEstimation,
+                     "ModelFittingRelativeDensityRatioEstimation"),
       std::make_pair(FitterType::DensityDifferenceEstimation,
                      "ModelFittingDensityDifferenceEstimation"),
+      std::make_pair(FitterType::DensityDerivativeRatioEstimation,
+                     "ModelFittingDensityDerivativeRatioEstimation"),
+      std::make_pair(FitterType::DensityDerivativeEstimation,
+                     "ModelFittingDensityDerivativeEstimation"),
       std::make_pair(FitterType::Classification, "ModelFittingClassification")};
 }();
 

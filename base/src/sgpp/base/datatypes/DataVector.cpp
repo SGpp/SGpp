@@ -290,6 +290,36 @@ double DataVector::sum() const {
   return result;
 }
 
+double DataVector::sumsqr() const {
+  double result = 0.0;
+
+  for (size_t i = 0; i < this->size(); ++i) {
+    result += (*this)[i] * (*this)[i];
+  }
+
+  return result;
+}
+
+double DataVector::sumlog() const {
+  double result = 0.0;
+
+  for (size_t i = 0; i < this->size(); ++i) {
+    result += std::log((*this)[i]);
+  }
+
+  return result;
+}
+
+double DataVector::sumabs() const {
+  double result = 0.0;
+
+  for (size_t i = 0; i < this->size(); ++i) {
+    result += std::abs((*this)[i]);
+  }
+
+  return result;
+}
+
 double DataVector::maxNorm() const {
   double max = 0.0;
 
@@ -374,6 +404,16 @@ void DataVector::axpy(double a, DataVector& x) {
 
   for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] += a * x[i];
+  }
+}
+
+void DataVector::getSgn(const DataVector& vec) {
+  if (this->correction.size() != this->size()) {
+    this->correction.resize(this->size());
+  }
+
+  for (size_t i = 0; i < this->size(); ++i) {
+    (*this)[i] = static_cast<double>(this->sgn(vec[i]));
   }
 }
 

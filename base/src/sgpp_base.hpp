@@ -117,6 +117,10 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
+
+#include <sgpp/base/grid/generation/functors/SurplusAbsValueCoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusAbsValueRefinementFunctor.hpp>
+
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
