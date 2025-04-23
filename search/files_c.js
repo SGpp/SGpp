@@ -23,7 +23,7 @@ var searchData=
   ['learnedknowledgeformatter_2epy_20',['LearnedKnowledgeFormatter.py',['../LearnedKnowledgeFormatter_8py.html',1,'']]],
   ['learner_2ecpp_21',['learner.cpp',['../Learner_8cpp.html',1,'(Global Namespace)'],['../learner_8cpp.html',1,'(Global Namespace)']]],
   ['learner_2ehpp_22',['Learner.hpp',['../Learner_8hpp.html',1,'']]],
-  ['learner_2epy_23',['learner.py',['../learner_2Learner_8py.html',1,'(Global Namespace)'],['../uq_2learner_2Learner_8py.html',1,'(Global Namespace)']]],
+  ['learner_2epy_23',['learner.py',['../uq_2learner_2Learner_8py.html',1,'(Global Namespace)'],['../learner_2Learner_8py.html',1,'(Global Namespace)']]],
   ['learnerbase_2ecpp_24',['LearnerBase.cpp',['../LearnerBase_8cpp.html',1,'']]],
   ['learnerbase_2ehpp_25',['LearnerBase.hpp',['../LearnerBase_8hpp.html',1,'']]],
   ['learnerbasesp_2ecpp_26',['LearnerBaseSP.cpp',['../LearnerBaseSP_8cpp.html',1,'']]],
