@@ -43,7 +43,7 @@ pipeline {
         WORKSPACE= "${env.WORKSPACE}"
         SGPP_SPACK_HOME= "/scratch/jenkins/spack-sgpp"
         SGPP_SPACK_CONFIGURATION= "/scratch/jenkins/spack-sgpp-configuration"
-	MAINTAINER_MAIL = credentials('OCTOTIGER_MAINTAINER_EMAIL')
+	MAINTAINER_MAIL = credentials('CPPUDDLE_MAINTAINER_EMAIL')
     }
 
     stages{
