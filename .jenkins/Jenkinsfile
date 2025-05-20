@@ -34,7 +34,7 @@ pipeline {
 
     triggers {
         githubPush() // Trigger by push to respective github branch
-        pollSCM 'H/30 * * * *' // Fallback polling solution as some pushes are somehow lost
+        pollSCM 'H/5 * * * *' // Fallback polling solution as some pushes are somehow lost
     }
 
     environment {
@@ -47,8 +47,16 @@ pipeline {
     }
 
     stages{
-        stage('Dependency -- CMake')
+        stage('Build')
         {
+            matrix {
+               axes {
+                   axis {
+                      name 'build_spec'
+                      values 'sgpp@master%gcc@13.3.0',\
+                             'sgpp@master +python +optimization +quadrature +solver +datadriven +combigrid +doc +eigen +dakota +visualization +misc cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ^python@3.13'
+                    }
+            }
             steps{
                 script{
 		sh '''
@@ -61,10 +69,13 @@ pipeline {
 			export SPACK_USER_CONFIG_PATH=/scratch/jenkins/spack-sgpp-configuration
 			source /scratch/jenkins/spack-sgpp/share/spack/setup-env.sh
                     spack info sgpp
+                    echo "${build_spec}"
+                    spack spec --fresh "${build_spec}"
             '''
                 }
                
             }
+        }
         }
 }
     post {
