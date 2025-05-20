@@ -57,6 +57,8 @@ pipeline {
                              'sgpp@master +python +optimization +quadrature +solver +datadriven +combigrid +doc +eigen +dakota +visualization +misc cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ^python@3.13'
                     }
             }
+            stages {
+            stage('build_spec') {
             steps{
                 script{
 		sh '''
@@ -75,6 +77,8 @@ pipeline {
                 }
                
             }
+        }
+        }
         }
         }
 }
