@@ -57,6 +57,10 @@ pipeline {
                     echo "SGpp Spack Dir: ${SGPP_SPACK_HOME}"
                     echo "SGpp Spack Config Dir: ${SGPP_SPACK_CONFIGURATION}"
                     echo "Mail: ${MAINTAINER_MAIL}"
+			export TMPDIR=/scratch/jenkins/sgpp-tmp
+			export SPACK_USER_CONFIG_PATH=/scratch/jenkins/spack-sgpp-configuration
+			source /scratch/jenkins/spack-sgpp/share/spack/setup-env.sh
+                    spack info sgpp
             '''
                 }
                
