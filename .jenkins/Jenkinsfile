@@ -38,7 +38,7 @@ pipeline {
     }
 
     environment {
-        GITHUB_TOKEN = credentials('GITHUB_TOKEN')
+        GITHUB_TOKEN = credentials('GITHUB_TOKEN_OCTOTIGER')
         BRANCH_NAME = "${env.BRANCH_NAME}"
         WORKSPACE= "${env.WORKSPACE}"
         SGPP_SPACK_HOME= "/scratch/jenkins/spack-sgpp"
@@ -70,12 +70,12 @@ pipeline {
                 buildbadge.setStatus('success')
             }
             sh '''
-                gitlab_token=$(echo ${GITHUB_TOKEN} | cut -f2 -d':')
+                github_token=$(echo ${GITHUB_TOKEN} | cut -f2 -d':')
                 curl --verbose\
                      --request POST \
                      --url "https://api.github.com/repos/sgpp/sgpp/statuses/$GIT_COMMIT" \
                      --header "Content-Type: application/json" \
-                     --header "authorization: Bearer ${gitlab_token}" \
+                     --header "authorization: Bearer ${github_token}" \
                      --data "{
                         \\"state\\": \\"success\\",
                         \\"context\\": \\"Jenkins CPU tests\\",
@@ -89,12 +89,12 @@ pipeline {
                 buildbadge.setStatus('failing')
             }
             sh '''
-                gitlab_token=$(echo ${GITHUB_TOKEN} | cut -f2 -d':')
+                github_token=$(echo ${GITHUB_TOKEN} | cut -f2 -d':')
                 curl --verbose\
                      --request POST \
                      --url "https://api.github.com/repos/sgpp/sgpp/statuses/$GIT_COMMIT" \
                      --header "Content-Type: application/json" \
-                     --header "authorization: Bearer ${gitlab_token}" \
+                     --header "authorization: Bearer ${github_token}" \
                      --data "{
                         \\"state\\": \\"failure\\",
                         \\"context\\": \\"Jenkins CPU tests\\",
@@ -108,12 +108,12 @@ pipeline {
                 buildbadge.setStatus('aborted')
             }
             sh '''
-                gitlab_token=$(echo ${GITHUB_TOKEN} | cut -f2 -d':')
+                github_token=$(echo ${GITHUB_TOKEN} | cut -f2 -d':')
                 curl --verbose\
                      --request POST \
                      --url "https://api.github.com/repos/sgpp/sgpp/statuses/$GIT_COMMIT" \
                      --header "Content-Type: application/json" \
-                     --header "authorization: Bearer ${gitlab_token}" \
+                     --header "authorization: Bearer ${github_token}" \
                      --data "{
                         \\"state\\": \\"error\\",
                         \\"context\\": \\"Jenkins CPU tests\\",
