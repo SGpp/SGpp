@@ -73,6 +73,8 @@ pipeline {
                     spack info sgpp
                     echo "${build_spec}"
                     spack spec --fresh "${build_spec}"
+                    spack dev-build --fresh --until=build --test=root "${build_spec}"
+		    rm .sconsign.dblite
             '''
                 }
                
