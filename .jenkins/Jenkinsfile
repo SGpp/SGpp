@@ -72,6 +72,8 @@ pipeline {
 			source /scratch/jenkins/spack-sgpp/share/spack/setup-env.sh
                     spack info sgpp
                     echo "${build_spec}"
+                    rm -rf .sconsign.dblite
+                    spack clean -a
                     spack spec --fresh "${build_spec}"
                     spack dev-build --fresh --until=build --test=root "${build_spec}"
 		    rm .sconsign.dblite
