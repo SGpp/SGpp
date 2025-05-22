@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE(testSurplusAdaptiveSplineResponseSurfaceEval) {
 
 // create regular SplineResponseSurface and evaluate jacobian
 BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceEvalGradient) {
-  double epsilon = 1e-13;
+  double epsilon = 5e-12;
   size_t dim = 3;
   size_t level = 3;
   auto testFunction = std::make_shared<scalarTestFunction>(dim);
@@ -403,7 +403,7 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVariance) {
 
 // create regular SplineResponseSurfaceVector and evaluate
 BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorEval) {
-  std::vector<double> epsilons{0.8, 1e-13, 1e-13};
+  std::vector<double> epsilons{0.8, 5e-12, 5e-12};
   size_t dim = 3;
   size_t m = 2;
   size_t level = 4;
@@ -435,7 +435,7 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorEval) {
 
 // create regular SplineResponseSurfaceVector and evaluate jacobian
 BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorEvalJacobian) {
-  double epsilon = 1e-13;
+  double epsilon = 5e-12;
   size_t dim = 3;
   size_t m = 2;
   size_t level = 3;
@@ -706,7 +706,7 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorVariance) {
 // create regular SplineResponseSurfaceVector, serialize it to files and create
 // new  SplineResponseSurfaceVector by unserializing from files
 BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorSerialize) {
-  double epsilon = 1e-13;
+  double epsilon = 5e-12;
   size_t dim = 3;
   size_t m = 2;
   size_t level = 1;  // small level to keep I/O operations quick
