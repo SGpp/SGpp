@@ -55,11 +55,12 @@ pipeline {
         steps{
                 script{
 		sh '''
-    echo test
+    echo "test"
+    echo "${variantList}"
     '''
             for(build_spec in variantList){
 		sh '''
-    echo ${build_sepc}
+    echo "My buildspec is ${build_sepc}"
     '''
             stages {
             stage('Build spack spec') {
