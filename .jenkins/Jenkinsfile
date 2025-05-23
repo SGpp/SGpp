@@ -50,10 +50,10 @@ pipeline {
     }
 
     stages{
-        stage('Build')
+        stage('Iterate spack variants')
         {
-            stages {
             for(build_spec in variantList){
+            stages {
             stage('build_spec') {
             steps{
                 script{
