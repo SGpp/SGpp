@@ -71,10 +71,11 @@ def variantList = ['sgpp@master%gcc@13.3.0',\
 			export SPACK_USER_CONFIG_PATH=/scratch/jenkins/spack-sgpp-configuration
 			source /scratch/jenkins/spack-sgpp/share/spack/setup-env.sh
                     spack info sgpp
-                    echo "${build_spec}"
+                    echo "Input spec: ${variantList[i]}"
                     rm -rf .sconsign.dblite
                     spack clean -a
                     rm .sconsign.dblite
+                    echo "Concretized spec"
                     spack spec --fresh "${variantList[i]}"
                     spack dev-build --fresh --until=build --test=root "${variantList[i]}"
     '''
