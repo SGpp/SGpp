@@ -54,9 +54,15 @@ pipeline {
         {
         steps{
                 script{
+		sh '''
+    echo test
+    '''
             for(build_spec in variantList){
+		sh '''
+    echo ${build_sepc}
+    '''
             stages {
-            stage('build_spec') {
+            stage('Build spack spec') {
             steps{
                 script{
 		sh '''
