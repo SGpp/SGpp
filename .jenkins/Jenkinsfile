@@ -62,32 +62,33 @@ def variantList = ['sgpp@master%gcc@13.3.0',\
 		sh '''
     echo "My buildspec is ${build_sepc}"
     '''
-            stages {
-            stage('Build spack spec') {
-            steps{
-                script{
-		sh '''
-		    cd ${WORKSPACE}
-                    pwd
-                    echo "SGpp Spack Dir: ${SGPP_SPACK_HOME}"
-                    echo "SGpp Spack Config Dir: ${SGPP_SPACK_CONFIGURATION}"
-                    echo "Mail: ${MAINTAINER_MAIL}"
-			export TMPDIR=/scratch/jenkins/sgpp-tmp
-			export SPACK_USER_CONFIG_PATH=/scratch/jenkins/spack-sgpp-configuration
-			source /scratch/jenkins/spack-sgpp/share/spack/setup-env.sh
-                    spack info sgpp
-                    echo "${build_spec}"
-                    rm -rf .sconsign.dblite
-                    spack clean -a
-                    spack spec --fresh "${build_spec}"
-                    spack dev-build --fresh --until=build --test=root "${build_spec}"
-		    rm .sconsign.dblite
-            '''
-                }
+            // stages {
+            // stage('Build spack spec') {
+            // steps{
+            //     script{
+		// sh '''
+		    // cd ${WORKSPACE}
+            //         pwd
+            //         echo "SGpp Spack Dir: ${SGPP_SPACK_HOME}"
+            //         echo "SGpp Spack Config Dir: ${SGPP_SPACK_CONFIGURATION}"
+            //         echo "Mail: ${MAINTAINER_MAIL}"
+			// export TMPDIR=/scratch/jenkins/sgpp-tmp
+			// export SPACK_USER_CONFIG_PATH=/scratch/jenkins/spack-sgpp-configuration
+			// source /scratch/jenkins/spack-sgpp/share/spack/setup-env.sh
+            //         spack info sgpp
+            //         echo "${build_spec}"
+            //         rm -rf .sconsign.dblite
+            //         spack clean -a
+            //         spack spec --fresh "${build_spec}"
+            //         spack dev-build --fresh --until=build --test=root "${build_spec}"
+		    // rm .sconsign.dblite
+            // '''
+            //     }
                
-            }
+            // }
+        // }
+        // }
         }
-        }}
         }
         }
         }
