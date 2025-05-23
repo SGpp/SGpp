@@ -80,7 +80,7 @@ pipeline {
                   buildbadge.setStatus('success')
                 }
                 sh """
-                github_token=$(echo ${GITHUB_TOKEN} | cut -f2 -d':')
+                github_token=$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
                 """
               }
               failure {
@@ -88,7 +88,7 @@ pipeline {
                   buildbadge.setStatus('failing')
                 }
                 sh """
-                github_token=$(echo ${GITHUB_TOKEN} | cut -f2 -d':')
+                github_token=$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
                 """
               }
               aborted {
@@ -96,7 +96,7 @@ pipeline {
                   buildbadge.setStatus('aborted')
                 }
                 sh """
-                github_token=$(echo ${GITHUB_TOKEN} | cut -f2 -d':')
+                github_token=$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
                 """
               }
             }
