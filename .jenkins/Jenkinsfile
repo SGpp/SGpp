@@ -80,7 +80,7 @@ pipeline {
                   buildbadge.setStatus('success')
                 }
                 sh """
-                github_token=$(echo "${GITHUB_TOKEN}" | cut -f2 -d':')
+                github_token=$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
                 """
               }
               // failure {
