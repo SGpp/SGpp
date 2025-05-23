@@ -52,6 +52,8 @@ pipeline {
     stages{
         stage('Iterate spack variants')
         {
+        steps{
+                script{
             for(build_spec in variantList){
             stages {
             stage('build_spec') {
@@ -78,6 +80,7 @@ pipeline {
                
             }
         }
+        }}
         }
         }
         }
