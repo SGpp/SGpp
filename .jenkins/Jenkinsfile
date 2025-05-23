@@ -79,25 +79,25 @@ pipeline {
                 script {
                   buildbadge.setStatus('success')
                 }
-                sh """
-                github_token=$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
-                """
+                sh '''
+                github_token=$(echo ${GITHUB_TOKEN} | cut -f2 -d':')
+                '''
               }
               failure {
                 script {
                   buildbadge.setStatus('failing')
                 }
-                sh """
-                github_token=$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
-                """
+                sh '''
+                github_token=$(echo ${GITHUB_TOKEN} | cut -f2 -d':')
+                '''
               }
               aborted {
                 script {
                   buildbadge.setStatus('aborted')
                 }
-                sh """
-                github_token=$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
-                """
+                sh '''
+                github_token=$(echo ${GITHUB_TOKEN} | cut -f2 -d':')
+                '''
               }
             }
           }
