@@ -59,7 +59,7 @@ def variantList = ['sgpp@master%gcc@13.3.0',\
     echo "${variantList}"
     '''
             for (int i = 0; i < variantList.size(); i++) {
-            stage('Build spack spec') {
+            stage('Build and Test ${variantList[i]}') {
         sh "echo Hello ${variantList[i]}"
 		sh '''
     echo "My buildspec is ${build_spec}"
