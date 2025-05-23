@@ -60,7 +60,7 @@ def variantList = ['sgpp@master%gcc@13.3.0',\
     '''
             for(build_spec in variantList){
 		sh '''
-    echo "My buildspec is ${build_sepc}"
+    echo "My buildspec is ${build_spec}"
     '''
             // stages {
             // stage('Build spack spec') {
