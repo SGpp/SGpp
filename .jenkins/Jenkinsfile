@@ -59,10 +59,12 @@ def variantList = ['sgpp@master%gcc@13.3.0',\
     echo "${variantList}"
     '''
             for (int i = 0; i < variantList.size(); i++) {
+            stage('Build spack spec') {
         sh "echo Hello ${variantList[i]}"
 		sh '''
     echo "My buildspec is ${build_spec}"
     '''
+    }}
             // stages {
             // stage('Build spack spec') {
             // steps{
@@ -89,7 +91,6 @@ def variantList = ['sgpp@master%gcc@13.3.0',\
             // }
         // }
         // }
-        }
         }
         }
         }
