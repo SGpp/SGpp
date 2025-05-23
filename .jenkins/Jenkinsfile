@@ -71,7 +71,7 @@ pipeline {
               spack clean -a
               echo "Concretized spec:"
               spack spec --fresh "${variantList[i]}"
-              spack dev-build --fresh --until=build --test=root "${variantList[i]}"
+              spack dev-build --fresh --until=build "${variantList[i]}"
               """
             }
             post {
@@ -111,7 +111,7 @@ pipeline {
                 \\"description\\": \\"Jenkins CI Job: ${variantDesciption[i]}\\",
                 \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/${BRANCH_NAME}/$BUILD_NUMBER/consoleText\\"
                 }"
-                '''
+                """
               }
               aborted {
                 script {
@@ -130,7 +130,7 @@ pipeline {
                 \\"description\\": \\"Jenkins CI Job: ${variantDesciption[i]}\\",
                 \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/${BRANCH_NAME}/$BUILD_NUMBER/consoleText\\"
                 }"
-                '''
+                """
               }
             }
           }
