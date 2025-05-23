@@ -2,6 +2,9 @@
 
 def buildbadge = addEmbeddableBadgeConfiguration(id: "Jenkins", subject: "Jenkins Tests", status: "skipped")
 
+String[] variantList = ['sgpp@master%gcc@13.3.0',\
+                        'sgpp@master +python +optimization +quadrature +solver +datadriven +combigrid +doc +eigen +visualization +misc cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ^python@3.13']
+
 if (currentBuild.getBuildCauses().toString().contains('BranchIndexingCause')) {
     print "INFO: Build on ${env.BRANCH_NAME}/${env.BUILD_NUMBER} triggered by branch indexing..."
     if (env.BRANCH_NAME != "master") {
@@ -49,15 +52,8 @@ pipeline {
     stages{
         stage('Build')
         {
-            matrix {
-               axes {
-                   axis {
-                      name 'build_spec'
-                      values 'sgpp@master%gcc@13.3.0',\
-                             'sgpp@master +python +optimization +quadrature +solver +datadriven +combigrid +doc +eigen +visualization +misc cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ^python@3.13'
-                    }
-            }
             stages {
+            for(build_spec in variantList){
             stage('build_spec') {
             steps{
                 script{
