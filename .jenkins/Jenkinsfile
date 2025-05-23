@@ -59,9 +59,6 @@ pipeline {
             }
             stages {
             stage('build_spec') {
-            options {
-                    lock( 'synchronous-matrix' )
-            }
             steps{
                 script{
 		sh '''
