@@ -71,7 +71,7 @@ pipeline {
               spack clean -a
               echo "Concretized spec:"
               spack spec --fresh "${variantList[i]}"
-              spack dev-build --fresh --until=build --test=root "${variantList[i]}"
+              spack dev-build -j 4 --fresh --until=build --test=root "${variantList[i]}"
               """
             }
             stage("Report Status") {
