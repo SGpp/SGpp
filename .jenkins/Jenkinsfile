@@ -71,7 +71,8 @@ pipeline {
               spack clean -a
               echo "Concretized spec:"
               spack spec --fresh "${variantList[i]}"
-              spack dev-build -j 4 --fresh --until=build --test=root "${variantList[i]}"
+              export OMP_NUM_THREADS=8
+              spack dev-build -j 8 --fresh --until=build --test=root "${variantList[i]}"
               """
             }
             stage("Report Status") {
