@@ -43,6 +43,8 @@ pipeline {
     WORKSPACE= "${env.WORKSPACE}"
     SGPP_SPACK_HOME= "/scratch/jenkins/spack-sgpp"
     SGPP_SPACK_CONFIGURATION= "/scratch/jenkins/spack-sgpp-configuration"
+    SGPP_TMP_DIR= "/scratch/jenkins/sgpp-tmp"
+    PARALLEL_PROCESSES_USED=8 
   }
 
   stages {
@@ -50,8 +52,10 @@ pipeline {
       steps{
         script{
           def variantList = ['sgpp@master%gcc@13.3.0',\
+                             'sgpp@master%clang',\
                              'sgpp@master +python +optimization +quadrature +solver +datadriven +combigrid +doc +eigen +visualization +misc cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ^python@3.13']
           def variantDesciption = ['SGpp: Basic GCC Tests',\
+                             'SGpp: Basic Clang Tests',\
                              'SGpp: Full GCC Tests with Python 3.13']
           for (int i = 0; i < variantList.size(); i++) {
             stage("Build and Test ${variantList[i]}") {
@@ -63,16 +67,16 @@ pipeline {
               echo ""
               echo "SGpp Spack Dir: ${SGPP_SPACK_HOME}"
               echo "SGpp Spack Config Dir: ${SGPP_SPACK_CONFIGURATION}"
-              export TMPDIR=/scratch/jenkins/sgpp-tmp
-              export SPACK_USER_CONFIG_PATH=/scratch/jenkins/spack-sgpp-configuration
-              source /scratch/jenkins/spack-sgpp/share/spack/setup-env.sh
+              export TMPDIR=${SGPP_TMP_DIR}
+              export SPACK_USER_CONFIG_PATH=${SGPP_SPACK_CONFIGURATION}
+              source ${SGPP_SPACK_HOME}/share/spack/setup-env.sh
               echo "Input spec: ${variantList[i]}"
               rm -rf .sconsign.dblite
               spack clean -a
               echo "Concretized spec:"
               spack spec --fresh "${variantList[i]}"
-              export OMP_NUM_THREADS=8
-              spack dev-build -j 8 --fresh --until=build --test=root "${variantList[i]}"
+              export OMP_NUM_THREADS=${PARALLEL_PROCESSES_USED}
+              spack dev-build -j ${PARALLEL_PROCESSES_USED} --fresh --until=build --test=root "${variantList[i]}"
               """
             }
             stage("Report Status") {
