@@ -56,6 +56,21 @@ pipeline {
                              'SGpp: Full Release GCC Tests with Datadriven and OpenCL',\
                              ]
           for (int i = 0; i < variantList.size(); i++) {
+            sh """
+            github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
+            curl --verbose\
+            --request POST \
+            --url "https://api.github.com/repos/sgpp/sgpp/statuses/\$GIT_COMMIT" \
+            --header "Content-Type: application/json" \
+            --header "authorization: Bearer \${github_token}" \
+            --data "{
+            \\"state\\": \\"pending\\",
+            \\"context\\": \\"${variantDescription[i]}\\",
+            \\"description\\": \\"Jenkins CI Job: ${variantDescription[i]}\\",
+            \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/\$BRANCH_NAME/\$BUILD_NUMBER/consoleText\\"
+            }"
+            """
+            def variant_build_status = "success"
             try {
             stage("Build and Test ${variantList[i]}") {
               sh """
@@ -79,22 +94,7 @@ pipeline {
               """
             }
             } catch(err) {
-            stage("Report Error") {
-              sh """
-              github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
-              curl --verbose\
-              --request POST \
-              --url "https://api.github.com/repos/sgpp/sgpp/statuses/\$GIT_COMMIT" \
-              --header "Content-Type: application/json" \
-              --header "authorization: Bearer \${github_token}" \
-              --data "{
-              \\"state\\": \\"failure\\",
-              \\"context\\": \\"${variantDescription[i]}\\",
-              \\"description\\": \\"Jenkins CI Job: ${variantDescription[i]}\\",
-              \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/\$BRANCH_NAME/\$BUILD_NUMBER/consoleText\\"
-              }"
-              """
-            }
+              variant_build_status = "failure"
             }
             stage("Report Status") {
               sh """
@@ -105,7 +105,7 @@ pipeline {
               --header "Content-Type: application/json" \
               --header "authorization: Bearer \${github_token}" \
               --data "{
-              \\"state\\": \\"success\\",
+              \\"state\\": \\"${variant_build_status}\\",
               \\"context\\": \\"${variantDescription[i]}\\",
               \\"description\\": \\"Jenkins CI Job: ${variantDescription[i]}\\",
               \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/\$BRANCH_NAME/\$BUILD_NUMBER/consoleText\\"
