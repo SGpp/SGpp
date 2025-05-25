@@ -1,22 +1,7 @@
 #!groovy
 
-def buildbadge = addEmbeddableBadgeConfiguration(id: "Jenkins", subject: "Jenkins Tests", status: "skipped")
+def buildbadge = addEmbeddableBadgeConfiguration(id: "Jenkins", subject: "SGpp Jenkins Tests", status: "skipped")
 
-
-if (currentBuild.getBuildCauses().toString().contains('BranchIndexingCause')) {
-  print "INFO: Build on ${env.BRANCH_NAME}/${env.BUILD_NUMBER} triggered by branch indexing..."
-  if (env.BRANCH_NAME != "master") {
-    if (env.BUILD_NUMBER != "1") { // Always execute first build to load this configuration and thus the triggers
-      print "INFO: Build on ${env.BRANCH_NAME}/${env.BUILD_NUMBER} skipped due being triggered by Branch Indexing instead of SCM change!"
-      buildbadge.setStatus('skipped')
-      currentBuild.result = 'ABORTED'
-      return // early exit to avoid redundant builds
-    }
-  }
-} else {
-  print "INFO: Build on ${env.BRANCH_NAME}/${env.BUILD_NUMBER} triggered by SCM change..."
-  print "Proceeding!"
-}
 
 pipeline {
   agent { label 'pcsgs03' }
@@ -51,6 +36,7 @@ pipeline {
     stage('Iterate spack variants') {
       steps{
         script{
+          buildbadge.setStatus('running')
           def variantList = ['sgpp@master%gcc@13.3.0',\
                              'sgpp@master%clang@18.1.3 ^openblas~fortran ^py-scipy%gcc@13.3.0',\
                              'sgpp@master%clang@18.1.3 +python +optimization +quadrature +solver +datadriven +combigrid +doc +eigen +visualization +misc cflags="-Werror" ^openblas~fortran ^py-scipy%gcc@13.3.0',\
@@ -71,44 +57,98 @@ pipeline {
                              ]
           for (int i = 0; i < variantList.size(); i++) {
             stage("Build and Test ${variantList[i]}") {
-              sh """
-              cd ${WORKSPACE}
-              pwd
-              echo "Running tests ${variantDescription[i]}:"
-              echo "--------------------------------------"
-              echo ""
-              echo "SGpp Spack Dir: ${SGPP_SPACK_HOME}"
-              echo "SGpp Spack Config Dir: ${SGPP_SPACK_CONFIGURATION}"
-              export TMPDIR=${SGPP_TMP_DIR}
-              export SPACK_USER_CONFIG_PATH=${SGPP_SPACK_CONFIGURATION}
-              source ${SGPP_SPACK_HOME}/share/spack/setup-env.sh
-              echo "Input spec: ${variantList[i]}"
-              rm -rf .sconsign.dblite
-              spack clean -a
-              echo "Concretized spec:"
-              spack spec --fresh "${variantList[i]}"
-              export OMP_NUM_THREADS=${PARALLEL_PROCESSES_USED}
-              spack dev-build -j ${PARALLEL_PROCESSES_USED} --fresh --until=build --test=root "${variantList[i]}"
-              """
+              steps {
+                sh """
+                cd ${WORKSPACE}
+                pwd
+                echo "Running tests ${variantDescription[i]}:"
+                echo "--------------------------------------"
+                echo ""
+                echo "SGpp Spack Dir: ${SGPP_SPACK_HOME}"
+                echo "SGpp Spack Config Dir: ${SGPP_SPACK_CONFIGURATION}"
+                export TMPDIR=${SGPP_TMP_DIR}
+                export SPACK_USER_CONFIG_PATH=${SGPP_SPACK_CONFIGURATION}
+                source ${SGPP_SPACK_HOME}/share/spack/setup-env.sh
+                echo "Input spec: ${variantList[i]}"
+                rm -rf .sconsign.dblite
+                spack clean -a
+                echo "Concretized spec:"
+                spack spec --fresh "${variantList[i]}"
+                export OMP_NUM_THREADS=${PARALLEL_PROCESSES_USED}
+                spack dev-build -j ${PARALLEL_PROCESSES_USED} --fresh --until=build --test=root "${variantList[i]}"
+                """
+              }
             }
-            stage("Report Status") {
-              sh """
-              github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
-              curl --verbose\
-              --request POST \
-              --url "https://api.github.com/repos/sgpp/sgpp/statuses/\$GIT_COMMIT" \
-              --header "Content-Type: application/json" \
-              --header "authorization: Bearer \${github_token}" \
-              --data "{
-              \\"state\\": \\"success\\",
-              \\"context\\": \\"${variantDescription[i]}\\",
-              \\"description\\": \\"Jenkins CI Job: ${variantDescription[i]}\\",
-              \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/\$BRANCH_NAME/\$BUILD_NUMBER/consoleText\\"
-              }"
-              """
+            post {
+              success {
+                sh """
+                github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
+                curl --verbose\
+                --request POST \
+                --url "https://api.github.com/repos/sgpp/sgpp/statuses/\$GIT_COMMIT" \
+                --header "Content-Type: application/json" \
+                --header "authorization: Bearer \${github_token}" \
+                --data "{
+                \\"state\\": \\"success\\",
+                \\"context\\": \\"${variantDescription[i]}\\",
+                \\"description\\": \\"Jenkins CI Job: ${variantDescription[i]}\\",
+                \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/\$BRANCH_NAME/\$BUILD_NUMBER/consoleText\\"
+                }"
+                """
+              }
+              failure {
+                sh """
+                github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
+                curl --verbose\
+                --request POST \
+                --url "https://api.github.com/repos/sgpp/sgpp/statuses/\$GIT_COMMIT" \
+                --header "Content-Type: application/json" \
+                --header "authorization: Bearer \${github_token}" \
+                --data "{
+                \\"state\\": \\"failure\\",
+                \\"context\\": \\"${variantDescription[i]}\\",
+                \\"description\\": \\"Jenkins CI Job: ${variantDescription[i]}\\",
+                \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/\$BRANCH_NAME/\$BUILD_NUMBER/consoleText\\"
+                }"
+                """
+              }
+              aborted {
+              failure {
+                sh """
+                github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
+                curl --verbose\
+                --request POST \
+                --url "https://api.github.com/repos/sgpp/sgpp/statuses/\$GIT_COMMIT" \
+                --header "Content-Type: application/json" \
+                --header "authorization: Bearer \${github_token}" \
+                --data "{
+                \\"state\\": \\"error\\",
+                \\"context\\": \\"${variantDescription[i]}\\",
+                \\"description\\": \\"Jenkins CI Job: ${variantDescription[i]}\\",
+                \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/\$BRANCH_NAME/\$BUILD_NUMBER/consoleText\\"
+                }"
+                """
+              }
             }
           }
         }
+      }
+    }
+  }
+  post {
+    success {
+      script {
+        buildbadge.setStatus('success')
+      }
+    }
+    failure {
+      script {
+        buildbadge.setStatus('failing')
+      }
+    }
+    aborted {
+      script {
+        buildbadge.setStatus('aborted')
       }
     }
   }
