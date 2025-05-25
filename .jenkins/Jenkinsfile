@@ -57,25 +57,25 @@ pipeline {
                              ]
           for (int i = 0; i < variantList.size(); i++) {
             stage("Build and Test ${variantList[i]}") {
-                sh """
-                cd ${WORKSPACE}
-                pwd
-                echo "Running tests ${variantDescription[i]}:"
-                echo "--------------------------------------"
-                echo ""
-                echo "SGpp Spack Dir: ${SGPP_SPACK_HOME}"
-                echo "SGpp Spack Config Dir: ${SGPP_SPACK_CONFIGURATION}"
-                export TMPDIR=${SGPP_TMP_DIR}
-                export SPACK_USER_CONFIG_PATH=${SGPP_SPACK_CONFIGURATION}
-                source ${SGPP_SPACK_HOME}/share/spack/setup-env.sh
-                echo "Input spec: ${variantList[i]}"
-                rm -rf .sconsign.dblite
-                spack clean -a
-                echo "Concretized spec:"
-                spack spec --fresh "${variantList[i]}"
-                export OMP_NUM_THREADS=${PARALLEL_PROCESSES_USED}
-                spack dev-build -j ${PARALLEL_PROCESSES_USED} --fresh --until=build --test=root "${variantList[i]}"
-                """
+              sh """
+              cd ${WORKSPACE}
+              pwd
+              echo "Running tests ${variantDescription[i]}:"
+              echo "--------------------------------------"
+              echo ""
+              echo "SGpp Spack Dir: ${SGPP_SPACK_HOME}"
+              echo "SGpp Spack Config Dir: ${SGPP_SPACK_CONFIGURATION}"
+              export TMPDIR=${SGPP_TMP_DIR}
+              export SPACK_USER_CONFIG_PATH=${SGPP_SPACK_CONFIGURATION}
+              source ${SGPP_SPACK_HOME}/share/spack/setup-env.sh
+              echo "Input spec: ${variantList[i]}"
+              rm -rf .sconsign.dblite
+              spack clean -a
+              echo "Concretized spec:"
+              spack spec --fresh "${variantList[i]}"
+              export OMP_NUM_THREADS=${PARALLEL_PROCESSES_USED}
+              spack dev-build -j ${PARALLEL_PROCESSES_USED} --fresh --until=build --test=root "${variantList[i]}"
+              """
             }
             post {
               success {
