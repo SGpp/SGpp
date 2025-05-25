@@ -77,55 +77,21 @@ pipeline {
               spack dev-build -j ${PARALLEL_PROCESSES_USED} --fresh --until=build --test=root "${variantList[i]}"
               """
             }
-            post {
-              success {
-                sh """
-                github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
-                curl --verbose\
-                --request POST \
-                --url "https://api.github.com/repos/sgpp/sgpp/statuses/\$GIT_COMMIT" \
-                --header "Content-Type: application/json" \
-                --header "authorization: Bearer \${github_token}" \
-                --data "{
-                \\"state\\": \\"success\\",
-                \\"context\\": \\"${variantDescription[i]}\\",
-                \\"description\\": \\"Jenkins CI Job: ${variantDescription[i]}\\",
-                \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/\$BRANCH_NAME/\$BUILD_NUMBER/consoleText\\"
-                }"
-                """
-              }
-              failure {
-                sh """
-                github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
-                curl --verbose\
-                --request POST \
-                --url "https://api.github.com/repos/sgpp/sgpp/statuses/\$GIT_COMMIT" \
-                --header "Content-Type: application/json" \
-                --header "authorization: Bearer \${github_token}" \
-                --data "{
-                \\"state\\": \\"failure\\",
-                \\"context\\": \\"${variantDescription[i]}\\",
-                \\"description\\": \\"Jenkins CI Job: ${variantDescription[i]}\\",
-                \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/\$BRANCH_NAME/\$BUILD_NUMBER/consoleText\\"
-                }"
-                """
-              }
-              aborted {
-                sh """
-                github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
-                curl --verbose\
-                --request POST \
-                --url "https://api.github.com/repos/sgpp/sgpp/statuses/\$GIT_COMMIT" \
-                --header "Content-Type: application/json" \
-                --header "authorization: Bearer \${github_token}" \
-                --data "{
-                \\"state\\": \\"error\\",
-                \\"context\\": \\"${variantDescription[i]}\\",
-                \\"description\\": \\"Jenkins CI Job: ${variantDescription[i]}\\",
-                \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/\$BRANCH_NAME/\$BUILD_NUMBER/consoleText\\"
-                }"
-                """
-              }
+            stage("Report Status") {
+              sh """
+              github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
+              curl --verbose\
+              --request POST \
+              --url "https://api.github.com/repos/sgpp/sgpp/statuses/\$GIT_COMMIT" \
+              --header "Content-Type: application/json" \
+              --header "authorization: Bearer \${github_token}" \
+              --data "{
+              \\"state\\": \\"success\\",
+              \\"context\\": \\"${variantDescription[i]}\\",
+              \\"description\\": \\"Jenkins CI Job: ${variantDescription[i]}\\",
+              \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/\$BRANCH_NAME/\$BUILD_NUMBER/consoleText\\"
+              }"
+              """
             }
           }
         }
