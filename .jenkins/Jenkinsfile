@@ -77,17 +77,17 @@ pipeline {
             }
             stage("Report Status") {
               sh """
-              github_token=\$(echo '${GITHUB_TOKEN}' | cut -f2 -d':')
+              github_token=\$(echo ${GITHUB_TOKEN} | cut -f2 -d':')
               curl --verbose\
               --request POST \
-              --url "https://api.github.com/repos/sgpp/sgpp/statuses/'$GIT_COMMIT'" \
+              --url "https://api.github.com/repos/sgpp/sgpp/statuses/$GIT_COMMIT" \
               --header "Content-Type: application/json" \
-              --header "authorization: Bearer '${GITHUB_TOKEN}'" \
+              --header "authorization: Bearer ${github_token}" \
               --data "{
               \\"state\\": \\"success\\",
               \\"context\\": \\"${variantDesciption[i]}\\",
               \\"description\\": \\"Jenkins CI Job: ${variantDesciption[i]}\\",
-              \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/'${BRANCH_NAME}'/'$BUILD_NUMBER'/consoleText\\"
+              \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/$BRANCH_NAME/$BUILD_NUMBER/consoleText\\"
               }"
               """
             }
