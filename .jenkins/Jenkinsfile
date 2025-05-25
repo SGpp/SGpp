@@ -57,7 +57,6 @@ pipeline {
                              ]
           for (int i = 0; i < variantList.size(); i++) {
             stage("Build and Test ${variantList[i]}") {
-              steps {
                 sh """
                 cd ${WORKSPACE}
                 pwd
@@ -77,7 +76,6 @@ pipeline {
                 export OMP_NUM_THREADS=${PARALLEL_PROCESSES_USED}
                 spack dev-build -j ${PARALLEL_PROCESSES_USED} --fresh --until=build --test=root "${variantList[i]}"
                 """
-              }
             }
             post {
               success {
