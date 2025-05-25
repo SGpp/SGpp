@@ -56,6 +56,7 @@ pipeline {
                              'SGpp: Full Release GCC Tests with Datadriven and OpenCL',\
                              ]
           for (int i = 0; i < variantList.size(); i++) {
+            try {
             stage("Build and Test ${variantList[i]}") {
               sh """
               cd ${WORKSPACE}
@@ -76,6 +77,24 @@ pipeline {
               export OMP_NUM_THREADS=${PARALLEL_PROCESSES_USED}
               spack dev-build -j ${PARALLEL_PROCESSES_USED} --fresh --until=build --test=root "${variantList[i]}"
               """
+            }
+            } catch(err) {
+            stage("Report Error") {
+              sh """
+              github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
+              curl --verbose\
+              --request POST \
+              --url "https://api.github.com/repos/sgpp/sgpp/statuses/\$GIT_COMMIT" \
+              --header "Content-Type: application/json" \
+              --header "authorization: Bearer \${github_token}" \
+              --data "{
+              \\"state\\": \\"failure\\",
+              \\"context\\": \\"${variantDescription[i]}\\",
+              \\"description\\": \\"Jenkins CI Job: ${variantDescription[i]}\\",
+              \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/\$BRANCH_NAME/\$BUILD_NUMBER/consoleText\\"
+              }"
+              """
+            }
             }
             stage("Report Status") {
               sh """
