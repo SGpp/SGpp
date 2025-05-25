@@ -6179,8 +6179,10 @@ def ProcessFile(filename, vlevel, extra_check_functions=[]):
                                         codecs.getreader('utf8'),
                                         codecs.getwriter('utf8'),
                                         'replace').read().split('\n')
+      codecs.close()
     else:
       lines = codecs.open(filename, 'r', 'utf8', 'replace').read().split('\n')
+      codecs.close()
 
     # Remove trailing '\r'.
     # The -1 accounts for the extra trailing blank line we get from split()
