@@ -52,7 +52,7 @@ pipeline {
       steps{
         script{
           def variantList = ['sgpp@master%gcc@13.3.0',\
-                             'sgpp@master%clang',\
+                             'sgpp@master%clang ^openblas~fortran',\
                              'sgpp@master +python +optimization +quadrature +solver +datadriven +combigrid +doc +eigen +visualization +misc cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ^python@3.13']
           def variantDescription = ['SGpp: Basic GCC Tests',\
                              'SGpp: Basic Clang Tests',\
