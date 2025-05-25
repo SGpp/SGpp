@@ -113,7 +113,6 @@ pipeline {
                 """
               }
               aborted {
-              failure {
                 sh """
                 github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
                 curl --verbose\
