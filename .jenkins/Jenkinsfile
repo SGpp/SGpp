@@ -48,7 +48,7 @@ pipeline {
                              ]
           def variantDescription = ['SGpp: Basic GCC Tests',\
                              'SGpp: Basic Clang Tests',\
-                             'SGpp: Full Release Clang Tests with Python 3.1',\
+                             'SGpp: Full Release Clang Tests with Python 3.13',\
                              'SGpp: Full Release GCC Tests with Python 3.9',\
                              'SGpp: Full Release GCC Tests with Python 3.13',\
                              'SGpp: Full Release GCC Tests with Python 3.13 Debug Version',\
