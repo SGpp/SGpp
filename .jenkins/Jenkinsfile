@@ -54,7 +54,7 @@ pipeline {
           def variantList = ['sgpp@master%gcc@13.3.0',\
                              'sgpp@master%clang',\
                              'sgpp@master +python +optimization +quadrature +solver +datadriven +combigrid +doc +eigen +visualization +misc cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ^python@3.13']
-          def variantDesciption = ['SGpp: Basic GCC Tests',\
+          def variantDescription = ['SGpp: Basic GCC Tests',\
                              'SGpp: Basic Clang Tests',\
                              'SGpp: Full GCC Tests with Python 3.13']
           for (int i = 0; i < variantList.size(); i++) {
@@ -62,7 +62,7 @@ pipeline {
               sh """
               cd ${WORKSPACE}
               pwd
-              echo "Running tests ${variantDesciption[i]}:"
+              echo "Running tests ${variantDescription[i]}:"
               echo "--------------------------------------"
               echo ""
               echo "SGpp Spack Dir: ${SGPP_SPACK_HOME}"
@@ -89,8 +89,8 @@ pipeline {
               --header "authorization: Bearer \${github_token}" \
               --data "{
               \\"state\\": \\"success\\",
-              \\"context\\": \\"${variantDesciption[i]}\\",
-              \\"description\\": \\"Jenkins CI Job: ${variantDesciption[i]}\\",
+              \\"context\\": \\"${variantDescription[i]}\\",
+              \\"description\\": \\"Jenkins CI Job: ${variantDescription[i]}\\",
               \\"target_url\\": \\"https://jenkins-sim.informatik.uni-stuttgart.de/job/sgpp/job/\$BRANCH_NAME/\$BUILD_NUMBER/consoleText\\"
               }"
               """
