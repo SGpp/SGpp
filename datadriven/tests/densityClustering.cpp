@@ -533,8 +533,7 @@ BOOST_AUTO_TEST_CASE(KNNGraphOpenCL) {
   delete operation_graph;
 }
 
-#endif
-
+// TODO check failure
 BOOST_AUTO_TEST_CASE(KNNPruneGraphOpenCL) {
   // Load input
   std::vector<int> graph;
@@ -618,6 +617,7 @@ BOOST_AUTO_TEST_CASE(KNNPruneGraphOpenCL) {
   }
   delete operation_prune;
 }
+#endif
 
 BOOST_AUTO_TEST_CASE(KNNClusterSearch) {
   // Load input
