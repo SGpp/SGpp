@@ -5,12 +5,14 @@ def buildbadge = addEmbeddableBadgeConfiguration(id: "Jenkins", subject: "SGpp J
 
 // Declarative Jenkins Pipeline for the SGpp tests. It define a list of SGpp
 // variants to build and test with the given GIT commit. The status of each
-// test will be sent to Gtihub as a commit status via curl and a github token
+// test will be sent to Github as a commit status via curl and a Github token
 // (stored within Jenkins itself).
+// NOTE: This pipeline requires working SGpp spack package and the node pcsgs03
+// to be working!
 pipeline {
-  // Keep the tests on pcsgs03 for now
-  // Here, the jenkins user has Spack installed in
-  // /scratch/jenkins/sgpp-spack
+  // Keep the tests on pcsgs03 for now Here, the jenkins user has Spack
+  // installed in "/scratch/jenkins/sgpp-spack"
+  // NOTE: Make sure that the installed gcc supports Fortran.
   agent { label 'pcsgs03' }
   options {
     // Define how long the logs and builds are kept
@@ -27,7 +29,7 @@ pipeline {
   }
 
   triggers {
-    githubPush() // Trigger by push to respective github branch
+    githubPush() // Trigger by push to respective Github branch
     pollSCM 'H/5 * * * *' // Fallback polling solution as some pushes are somehow lost
   }
 
@@ -42,7 +44,7 @@ pipeline {
     SGPP_SPACK_CONFIGURATION= "/scratch/jenkins/spack-sgpp-configuration"
     // Spack requires its on tmp storage as the given one on the machine is limited
     SGPP_TMP_DIR= "/scratch/jenkins/sgpp-tmp"
-    // Limit ourselves to 12 out of the 18 cores to keep the machine usuable for other stuff
+    // Limit ourselves to 12 out of the 18 cores to keep the machine useable for other stuff
     // NOTE: Never use 36 with the hyperthreading -- the tests will take a long time otherwise
     PARALLEL_PROCESSES_USED=12 
   }
@@ -51,7 +53,7 @@ pipeline {
     stage('Iterate spack variants') {
       steps{
         script{
-          // Start with setting the build-badge on the SGpp github page to running
+          // Start with setting the build-badge on the SGpp Github page to running
           buildbadge.setStatus('running')
           // Define Spack spec of the SGpp configurations that we want to test
           // in a list
@@ -76,12 +78,12 @@ pipeline {
                              'SGpp: Full Release GCC Tests with Datadriven and OpenCL',\
                              ]
           // Iterate over the list, build and test the given spec in the list
-          // and notify github via a commit status about which test is
+          // and notify Github via a commit status about which test is
           // currently running and about the status of the finished tests
           for (int i = 0; i < variantList.size(); i++) {
             // 1. Set commit status for this test to "pending" (yellow dot)
-            // Done by sending a message via curl to github with the commit 
-            // information and our github token
+            // Done by sending a message via curl to Github with the commit 
+            // information and our Github token
             sh """
             github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
             curl --verbose\
@@ -100,7 +102,7 @@ pipeline {
             def variant_build_status = "success"
             try {
             // 2. Reset and setup build environment and use spack dev-build to
-            // build the given sgpp commit with spack and test it. 
+            // build the given SGpp commit with spack and test it. 
             stage("Build and Test ${variantList[i]}") {
               sh """
               cd ${WORKSPACE}
@@ -131,7 +133,7 @@ pipeline {
             }
             // 3. Set commit status to the final result (either success or
             // failure) instead of the "pending" status we gave it earlier. Use
-            // curl and the github token again for this
+            // curl and the Github token again for this
             sh """
             github_token=\$(echo \${GITHUB_TOKEN} | cut -f2 -d':')
             curl --verbose\
