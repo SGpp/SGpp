@@ -62,8 +62,8 @@ pipeline {
                              'sgpp@master%clang@18.1.3 +python +optimization +quadrature +solver +pde +datadriven +combigrid +doc +eigen +visualization +misc cflags="-Werror" ^openblas~fortran ^py-scipy%gcc@13.3.0',\
                              'sgpp@master +python +optimization +quadrature +solver +pde +datadriven +combigrid +doc +eigen +visualization +misc cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ^python@3.9',\
                              'sgpp@master +python +optimization +quadrature +solver +pde +datadriven +combigrid +doc +eigen +visualization +misc cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ^python@3.13',\
-                             'sgpp@master +python ~optimization +quadrature +solver +pde ~datadriven ~combigrid ~doc ~visualization ~misc cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ^python@3.11+debug',\
-                             'sgpp@master +debug +python ~optimization +quadrature +solver +pde ~datadriven ~combigrid ~doc ~visualization ~misc cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ^python@3.11+debug',\
+                             'sgpp@master +python +optimization +quadrature +solver +pde ~datadriven ~combigrid ~doc ~visualization ~misc cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ^python@3.11+debug',\
+                             'sgpp@master +debug +python +optimization +quadrature +solver +pde ~datadriven ~combigrid ~doc ~visualization ~misc cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ^python@3.11+debug',\
                              'sgpp@master ~python +optimization +quadrature +solver +datadriven +combigrid +misc +opencl cflags="-Werror" %gcc@13.3.0 ^swig@4.1 ',\
                              ]
           // Define a human-readable name for each of the tests from the list
