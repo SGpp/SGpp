@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #ifdef ZLIB
-#if USE_OCL == 1
+#if USE_OCL == 1 && AUTOTUNE_PERFORMANCE_TESTS == 1
 
 #define BOOST_TEST_DYN_LINK
 #include "testsCommon.hpp"
