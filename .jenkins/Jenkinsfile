@@ -121,7 +121,6 @@ pipeline {
               echo "Concretized spec:"
               spack spec --fresh "${variantList[i]}"
               export OMP_NUM_THREADS=${PARALLEL_PROCESSES_USED}
-              export POCL_DEVICES=cuda
               export POCL_MAX_CPU_CU_COUNT=${PARALLEL_PROCESSES_USED}
               spack dev-build -j ${PARALLEL_PROCESSES_USED} --fresh --until=build --test=root "${variantList[i]}"
               """
@@ -151,7 +150,7 @@ pipeline {
             // Add early exit in case the current test has failed (otherwise
             // all other tests would still run)
             if (variant_build_status == "failure") {
-              error("Tests failed! \"${variantDescription[i]}\" for variant \"${variantList[i]}\""
+              error("Tests failed! \"${variantDescription[i]}\" for variant \"${variantList[i]}\"")
             }
           }
         }
