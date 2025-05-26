@@ -122,7 +122,7 @@ pipeline {
               spack spec --fresh "${variantList[i]}"
               export OMP_NUM_THREADS=${PARALLEL_PROCESSES_USED}
               export POCL_MAX_CPU_CU_COUNT=${PARALLEL_PROCESSES_USED}
-              spack dev-build -j ${PARALLEL_PROCESSES_USED} --fresh --until=build --test=root "${variantList[i]}"
+              spack dev-build --dirty -j ${PARALLEL_PROCESSES_USED} --fresh --until=build --test=root "${variantList[i]}"
               """
             }
             } catch(err) {
