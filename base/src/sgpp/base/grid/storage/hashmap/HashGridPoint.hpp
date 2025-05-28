@@ -15,6 +15,7 @@
 #include <sstream>
 #include <string>
 #include <cmath>
+#include <cstdint>
 #include <algorithm>
 #include <map>
 #include <vector>
