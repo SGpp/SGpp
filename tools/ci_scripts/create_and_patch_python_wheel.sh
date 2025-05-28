@@ -8,7 +8,7 @@ export LD_LIBRARY_PATH=$(pwd)/lib:$LD_LIBRARY_PATH
 
 # create wheel and patch dependencies
 python3 setup.py bdist_wheel
-auditwheel repair dist/pysgpp-0.0.0-py3-none-any.whl --plat linux_x86_64
+auditwheel repair dist/pysgpp-0.0.0-py3-none-any.whl --plat manylinux_2_39_x86_64
 
 # install patched package
 pip3 install wheelhouse/pysgpp-0.0.0-py3-none-linux_x86_64.whl
