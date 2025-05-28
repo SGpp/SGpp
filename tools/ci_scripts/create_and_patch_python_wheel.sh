@@ -11,7 +11,7 @@ python3 setup.py bdist_wheel
 auditwheel repair dist/pysgpp-0.0.0-py3-none-any.whl --plat manylinux_2_39_x86_64
 
 # install patched package
-pip3 install wheelhouse/pysgpp-0.0.0-py3-none-linux_x86_64.whl
+pip3 install wheelhouse/pysgpp-0.0.0-py3-none-manylinux_2_39_x86_64.whl
 
 # test some examples
 printf '\n\n\n~~~ Testing pip python package ~~~\n\n'

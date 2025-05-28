@@ -8,6 +8,7 @@
 #include <sgpp/globaldef.hpp>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace sgpp {
 namespace datadriven {
