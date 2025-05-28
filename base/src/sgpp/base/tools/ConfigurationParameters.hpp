@@ -12,6 +12,7 @@
 #include <string>
 #include <memory>
 #include <iostream>
+#include <cstdint>
 
 namespace sgpp {
 namespace base {
