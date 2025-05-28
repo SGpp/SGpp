@@ -9,6 +9,7 @@
 #include <cstdlib>    // std::rand, std::srand
 #include <ctime>      // std::time
 #include <vector>     // std::vector
+#include <cstdint>
 
 namespace sgpp {
 namespace datadriven {
