@@ -42,17 +42,22 @@ double calculateVariance(std::vector<double>& x) {
 BOOST_AUTO_TEST_CASE(TestPrinter) {
   // Test sgpp::base::Printer.
 
+  std::cerr << "Hello from testPrinter" << std::endl;
   // redirect std::cout to not confuse the user
   const std::string fileName = "test_tools_output.tmp";
+  std::cerr << "Read file..." << std::endl;
   std::ofstream outStream(fileName);
+  std::cerr << "Set stream..." << std::endl;
   Printer::getInstance().setStream(&outStream);
 
+  std::cerr << "Do printer stuff" << std::endl;
   Printer::getInstance().setVerbosity(2);
   Printer::getInstance().printStatusBegin("Testing status printing...");
   Printer::getInstance().printStatusUpdate("Test status update 1");
   Printer::getInstance().printStatusUpdate("Test status update 2");
   Printer::getInstance().printStatusEnd("Testing status printing ended.");
 
+  std::cerr << "Get mutex" << std::endl;
   Printer::getInstance().getMutex();
 
   const double duration = Printer::getInstance().getLastDurationSecs();
@@ -66,8 +71,11 @@ BOOST_AUTO_TEST_CASE(TestPrinter) {
   Printer::getInstance().printSLE(sle);
 
   // undo redirection
+  std::cerr << "Close file" << std::endl;
   outStream.close();
+  std::cerr << "Remove file" << std::endl;
   std::remove(fileName.c_str());
+  std::cerr << "Set stream back to cout" << std::endl;
   Printer::getInstance().setStream(&std::cout);
 }
 
