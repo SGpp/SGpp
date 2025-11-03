@@ -15,15 +15,8 @@ pipeline {
   // NOTE: Make sure that the installed gcc supports Fortran.
   agent { label 'pcsgs03' }
   options {
-    // Define how long the logs and builds are kept
-    buildDiscarder(
-      logRotator(
-        daysToKeepStr: "21",
-        numToKeepStr: "50",
-        artifactDaysToKeepStr: "21",
-        artifactNumToKeepStr: "50"
-      )
-    )
+    // We check out the code manually in the pipeline to ensure a clean build
+    skipDefaultCheckout(true)
     // Do not allow concurrent builds (machine gets well utilized by a single one)
     disableConcurrentBuilds()
   }
@@ -51,7 +44,12 @@ pipeline {
 
   stages {
     stage('Iterate spack variants') {
-      steps{
+      steps {
+        // Clean before build
+        cleanWs()
+        // explicitly checkout from SCM here
+        checkout scm
+        // Run actual tests in a script
         script{
           // Start with setting the build-badge on the SGpp Github page to running
           buildbadge.setStatus('running')
@@ -171,6 +169,15 @@ pipeline {
       script {
         buildbadge.setStatus('aborted')
       }
+    }
+    // clean
+    always {
+      cleanWs(cleanWhenNotBuilt: false,
+        deleteDirs: true,
+        disableDeferredWipeout: true,
+        notFailBuild: true,
+        patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
+                   [pattern: '.propsfile', type: 'EXCLUDE']])
     }
   }
 }
