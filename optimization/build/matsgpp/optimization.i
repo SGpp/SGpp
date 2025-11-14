@@ -235,6 +235,7 @@ void omp_set_num_threads(int num_threads);
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGenerator.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorFuzzyRitterNovak.hpp"
+%include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorFullAdaptiveRitterNovak.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp"
 

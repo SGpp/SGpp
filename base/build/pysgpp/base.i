@@ -302,6 +302,7 @@ const bool UMFPACK_ENABLED;
 %include "base/src/sgpp/base/tools/sle/solver/BiCGStab.hpp"
 %include "base/src/sgpp/base/tools/sle/solver/Eigen.hpp"
 %include "base/src/sgpp/base/tools/sle/solver/GaussianElimination.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/IterativeGaussianElimination.hpp"
 %include "base/src/sgpp/base/tools/sle/solver/Gmmpp.hpp"
 %include "base/src/sgpp/base/tools/sle/solver/UMFPACK.hpp"
 

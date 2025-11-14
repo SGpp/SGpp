@@ -20,6 +20,7 @@
 #include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorFuzzyRitterNovak.hpp>
+#include <sgpp/optimization/gridgen/IterativeGridGeneratorFullAdaptiveRitterNovak.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp>

@@ -28,6 +28,8 @@ declare -a cpp_examples_to_test=(
                                     "solver/examples/fistaExample.cpp"
                                     "optimization/examples/optimization.cpp"
                                     "optimization/examples/constrainedOptimization.cpp"
+                                    "optimization/examples/RitterNovakExample.cpp"
+                                    "optimization/examples/RitterNovakHyperparameterOptimisation.cpp"
                                     "combigrid/examples/combigrid.cpp" 
                                 )
 arraylength=${#cpp_examples_to_test[@]}

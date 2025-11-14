@@ -185,6 +185,10 @@ vars.Add(BoolVariable("USE_EIGEN", "Set if Eigen should be used " +
                                    "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_GMMPP", "Set if Gmm++ should be used " +
                                    "(only relevant for sgpp::optimization)", False))
+vars.Add(BoolVariable("USE_LIBGP", "Set if libgp should be used " +
+                                   "(only relevant for sgpp::optimization)", False))
+vars.Add(BoolVariable("USE_BAYESOPT", "Set if BayesOpt should be used " +
+                                   "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
                                      "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_DAKOTA", "Set if Dakota library should be used " +

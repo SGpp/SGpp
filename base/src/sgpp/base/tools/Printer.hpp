@@ -45,8 +45,29 @@ inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& x) {
  * @param x         vector
  * @return          stream
  */
-inline std::ostream& operator<<(std::ostream& stream, const DataVector& x) {
-  return stream << x.toString();
+inline std::ostream& operator<<(std::ostream& os, const DataVector& vector) {
+  for (size_t i = 0; i < vector.size(); ++i) {
+    if (0 != i) {
+      os << ", ";
+    }
+    os << vector[i];
+  }
+  return os;
+}
+
+inline std::ostream& operator<<(std::ostream& os, const DataMatrix& matrix) {
+  for (size_t row = 0; row < matrix.getNrows(); ++row) {
+    if (0 != row) {
+      os << "\n";
+    }
+    for (size_t col = 0; col < matrix.getNcols(); ++col) {
+      if (0 != col) {
+        os << ", ";
+      }
+      os << matrix(row, col);
+    }
+  }
+  return os;
 }
 
 /**

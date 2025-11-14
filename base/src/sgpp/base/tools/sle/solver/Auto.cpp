@@ -9,6 +9,7 @@
 #include <sgpp/base/tools/sle/solver/BiCGStab.hpp>
 #include <sgpp/base/tools/sle/solver/Eigen.hpp>
 #include <sgpp/base/tools/sle/solver/GaussianElimination.hpp>
+#include <sgpp/base/tools/sle/solver/IterativeGaussianElimination.hpp>
 #include <sgpp/base/tools/sle/solver/Gmmpp.hpp>
 #include <sgpp/base/tools/sle/solver/UMFPACK.hpp>
 #include <sgpp/globaldef.hpp>
