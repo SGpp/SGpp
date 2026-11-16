@@ -8,6 +8,7 @@
 
 #include <algorithm>  // std::nth_element
 #include <cmath>
+#include <cstddef>  // std::ptrdiff_t
 #include <iostream>  // std::cout
 #include <iterator>
 #include <memory>
@@ -53,8 +54,13 @@ class IndexInSubspaceGenerator {
   /**
    * Iterator class compatible with STL forward iterator (no const iterator)
    */
-  class iterator
-    : std::iterator<std::forward_iterator_tag, value_type> {
+  class iterator {
+    typedef std::forward_iterator_tag iterator_category;
+    typedef IndexInSubspaceGenerator::value_type value_type;
+    typedef std::ptrdiff_t difference_type;
+    typedef value_type* pointer;
+    typedef value_type& reference;
+
    public:
     explicit iterator(IndexInSubspaceGenerator* p = nullptr) : ptr_(p) {}
     // implicit copy constructor, copy assignment and destructor

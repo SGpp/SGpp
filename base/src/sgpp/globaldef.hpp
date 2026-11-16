@@ -72,9 +72,9 @@ std::unique_ptr<T> make_unique(Args&&... args) {  // NOLINT(build/c++11)
 }
 #endif
 
-#if __cplusplus == 201402L
-// Hotfix for c++14, which seems to have stricter requirements for the availability of the size_t
-// type.
+#if __cplusplus >= 201402L
+// Hotfix for c++14 and newer, which seem to have stricter requirements for the
+// availability of the size_t type.
 #include <cstddef>
 #include <memory>  // NOLINT(build/include)
 #endif

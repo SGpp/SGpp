@@ -5,9 +5,10 @@
 
 #include <sgpp/datadriven/tools/SortedDataset.hpp>
 
-#include <algorithm>  // std::random_shuffle
+#include <algorithm>  // std::shuffle
 #include <cstdlib>    // std::rand, std::srand
 #include <ctime>      // std::time
+#include <random>     // std::mt19937
 #include <vector>     // std::vector
 #include <cstdint>
 
@@ -150,7 +151,11 @@ void SortedDataset::setOrder(OrderType order) {
       ot = OrderType::Random;
       perm.resize(numberInstances);
       for (size_t i = 0; i < perm.size(); ++i) perm[i] = i;
-      std::random_shuffle(perm.begin(), perm.end());
+      {
+        // seeded via std::rand() so that std::srand() still controls the shuffle
+        std::mt19937 generator(static_cast<std::mt19937::result_type>(std::rand()));
+        std::shuffle(perm.begin(), perm.end(), generator);
+      }
       usePermutation();
       break;
     case OrderType::Morton:
