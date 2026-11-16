@@ -144,7 +144,7 @@ void ForwardSelectorRefinement::refineGridpointsCollection(
   for (size_t seqNr = lastSeqNr + 1; seqNr < storage.getSize(); ++seqNr) {
     svmIndicator.update(storage.getPoint(seqNr));
   }
-  collection.empty();
+  collection.clear();
 }
 
 void ForwardSelectorRefinement::free_refine(

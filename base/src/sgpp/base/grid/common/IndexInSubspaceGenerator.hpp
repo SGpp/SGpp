@@ -47,9 +47,7 @@ class IndexInSubspaceGenerator {
   /**
    * Destructor
    */
-  ~IndexInSubspaceGenerator() {
-    this->queue_.empty();
-  }
+  ~IndexInSubspaceGenerator() {}
 
 
   /**
