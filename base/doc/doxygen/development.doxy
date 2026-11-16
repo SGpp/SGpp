@@ -42,7 +42,7 @@ On this page, we describe best coding practices for SG++.
 - Right-click project &rarr; <i>Properties</i> &rarr; <i>C/C++ General</i> &rarr; <i>Preprocessor Include Paths, Macros etc.</i> &rarr; <i>Providers</i> (Tab).
 - Select only <i>CDT User Settings</i> and <i>CDT GCC Built-in Compiler Settings</i>.
 - Move the latter to the top of the list.
-- Add "-std=c++17" to the <i>Command to get compiler specs</i> field.
+- Add "-std=c++20" to the <i>Command to get compiler specs</i> field.
 
 @image html Properties_for_SGpp__019.png
 

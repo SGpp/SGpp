@@ -45,7 +45,7 @@ do
   echo "... switching into test folder"
   cd "$HOME/testing_package"
   echo "... building ${target_file} into $exec_name "
-  g++ ${file_name} -std=c++17 -o ${exec_name} -l sgppbase -l sgppsolver -l sgppoptimization -lsgppcombigrid
+  g++ ${file_name} -std=c++20 -o ${exec_name} -l sgppbase -l sgppsolver -l sgppoptimization -lsgppcombigrid
   echo "... running ./${exec_name} "
   ./${exec_name}
   echo "... switching back into SGpp root directory"

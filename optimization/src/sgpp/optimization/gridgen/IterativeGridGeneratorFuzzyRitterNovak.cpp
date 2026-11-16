@@ -244,9 +244,9 @@ bool IterativeGridGeneratorFuzzyRitterNovak::generate() {
       // determine the best "i"s (i.e.,
       // iMinBest = argmin_i g_i and iMaxBest = argmax_i g_i)
       double gMinBest = std::numeric_limits<double>::infinity();
-      size_t iMinBest;
+      size_t iMinBest = 0;
       double gMaxBest = std::numeric_limits<double>::infinity();
-      size_t iMaxBest;
+      size_t iMaxBest = 0;
 
       for (size_t j = 0; j < NRestricted; j++) {
         const size_t i = pointsRestricted[j];
