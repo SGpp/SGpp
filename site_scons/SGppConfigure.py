@@ -112,6 +112,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   config.env["PRINT_CMD_LINE_FUNC"] = Helper.printCommand
 
   checkCppStandard(config)
+  checkAVX(config)
   if "doxygen" in SCons.Script.BUILD_TARGETS:
     checkDoxygen(config)
     checkDot(config)
@@ -232,6 +233,14 @@ def checkCppStandard(config):
   Helper.printErrorAndExit(
       "The compiler doesn't seem to support the C++{} standard (CPP_STD={}). Abort!".format(
           cppStd, cppStd))
+
+def checkAVX(config):
+  # AVX-only code is guarded by __AVX__ in the sources (e.g., the subspace-linear operations in
+  # datadriven, their tests and SWIG interfaces). Whether the compiler defines __AVX__ depends not
+  # only on ARCH, but also on the compiler's default target (e.g., x86-64-v3 on Ubuntu 26.04
+  # cloud images). Ask the compiler with the final flags, so that the build compiles the
+  # AVX-only sources exactly when the code that uses them is compiled.
+  config.env["COMPILER_TARGETS_AVX"] = bool(config.CheckDeclaration("__AVX__", language="C++"))
 
 def checkDoxygen(config):
   # check whether Doxygen installed
