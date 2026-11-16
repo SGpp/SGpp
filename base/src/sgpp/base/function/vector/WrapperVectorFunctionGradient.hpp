@@ -10,6 +10,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <utility>
 #include <memory>
 namespace sgpp {
 namespace base {
@@ -31,7 +32,7 @@ class WrapperVectorFunctionGradient : public VectorFunctionGradient {
    * @param fGradient function gradient to be wrapped
    */
   WrapperVectorFunctionGradient(size_t d, size_t m, FunctionGradientEvalType fGradient)
-      : VectorFunctionGradient(d, m), fGradient(fGradient) {}
+      : VectorFunctionGradient(d, m), fGradient(std::move(fGradient)) {}
 
   /**
    * Destructor.

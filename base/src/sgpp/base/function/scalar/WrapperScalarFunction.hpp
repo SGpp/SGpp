@@ -10,6 +10,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <utility>
 #include <memory>
 namespace sgpp {
 namespace base {
@@ -27,7 +28,7 @@ class WrapperScalarFunction : public ScalarFunction {
    * @param d         dimension of the domain
    * @param f         function to be wrapped
    */
-  WrapperScalarFunction(size_t d, FunctionEvalType f) : ScalarFunction(d), f(f) {}
+  WrapperScalarFunction(size_t d, FunctionEvalType f) : ScalarFunction(d), f(std::move(f)) {}
 
   /**
    * Destructor.

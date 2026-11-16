@@ -10,6 +10,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <utility>
 #include <memory>
 #include <vector>
 namespace sgpp {
@@ -33,7 +34,7 @@ class WrapperVectorFunctionHessian : public VectorFunctionHessian {
    * @param fHessian  function gradient to be wrapped
    */
   WrapperVectorFunctionHessian(size_t d, size_t m, FunctionHessianEvalType fHessian)
-      : VectorFunctionHessian(d, m), fHessian(fHessian) {}
+      : VectorFunctionHessian(d, m), fHessian(std::move(fHessian)) {}
 
   /**
    * Destructor.
