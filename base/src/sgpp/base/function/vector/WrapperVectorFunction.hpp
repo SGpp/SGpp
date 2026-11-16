@@ -10,6 +10,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <utility>
 #include <memory>
 namespace sgpp {
 namespace base {
@@ -28,7 +29,8 @@ class WrapperVectorFunction : public VectorFunction {
    * @param m         number of components
    * @param f         function to be wrapped
    */
-  WrapperVectorFunction(size_t d, size_t m, FunctionEvalType f) : VectorFunction(d, m), f(f) {}
+  WrapperVectorFunction(size_t d, size_t m, FunctionEvalType f)
+      : VectorFunction(d, m), f(std::move(f)) {}
 
   /**
    * Destructor.

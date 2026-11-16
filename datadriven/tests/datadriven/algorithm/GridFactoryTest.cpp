@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(NextHierarchicalParentStencil) {
   GridFactory grid;
   sgpp::datadriven::GeometryConfiguration geometryConfig;
   geometryConfig.dim_ = {{3, 3}, {2, 2}, {1, 1}};
-  sgpp::datadriven::StencilConfiguration s;
+  sgpp::datadriven::StencilConfiguration s{};
   s.colorIndex_ = -1;
   s.applyOnLayers_ = {0, 1, 2};
   s.stencilType_ = sgpp::datadriven::StencilType::NextHierarchicalParent;
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(AllHierarchicalParentStencilOnSpecificLayer) {
 
   sgpp::datadriven::GeometryConfiguration geometryConfig;
   geometryConfig.dim_ = {{3, 3}, {2, 2}, {1, 1}};
-  sgpp::datadriven::StencilConfiguration s;
+  sgpp::datadriven::StencilConfiguration s{};
   s.colorIndex_ = -1;
   s.applyOnLayers_ = {0};
   s.stencilType_ = sgpp::datadriven::StencilType::AllHierarchicalParent;
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(AllHierarchicalParentStencil) {
 
   sgpp::datadriven::GeometryConfiguration geometryConfig;
   geometryConfig.dim_ = {{3, 3}, {2, 2}, {1, 1}};
-  sgpp::datadriven::StencilConfiguration s;
+  sgpp::datadriven::StencilConfiguration s{};
   s.colorIndex_ = -1;
   s.applyOnLayers_ = {0, 1, 2};
   s.stencilType_ = sgpp::datadriven::StencilType::AllHierarchicalParent;
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(DirectNeighbourStencil) {
   GridFactory grid;
   sgpp::datadriven::GeometryConfiguration geometryConfig;
   geometryConfig.dim_ = {{3, 3}, {2, 2}, {1, 1}};
-  sgpp::datadriven::StencilConfiguration s;
+  sgpp::datadriven::StencilConfiguration s{};
   s.colorIndex_ = -1;
   s.applyOnLayers_ = {0, 1, 2};
   s.stencilType_ = sgpp::datadriven::StencilType::DirectNeighbour;

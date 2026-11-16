@@ -110,10 +110,15 @@ vars.Add("ARCH", "Set the architecture, the possible values are compiler-depende
 vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard configuration, " +
                      "the following values are possible: " +
                      "gnu, clang, intel, openmpi, mpich, intel.mpi; " +
-                     "when using the Intel Compiler, version 11 or higher must be used", "gnu")
+                     "the classic Intel Compiler (icpc) supports at most CPP_STD=20", "gnu")
 vars.Add("CC", "Override the C compiler, can be used to select a specific compiler version, otherwise use \"COMPILER\"", None)
 vars.Add("CXX", "Override the C++ compiler, can be used to select a specific compiler version, otherwise use \"COMPILER\"", None)
 vars.Add("LINK", "Override the linker, can be used to select a specific linker version", None)
+vars.Add(EnumVariable("CPP_STD", "Set the C++ language standard (-std=c++<value>); " +
+                      "minimum compiler versions: 23: GCC 11 or Clang 17, " +
+                      "20: GCC 10 or Clang 10, 17: GCC 9 or Clang 5, " +
+                      "14: GCC 6 or Clang 3.5, 11: GCC 5 or Clang 3.3", "23",
+                      allowed_values=("11", "14", "17", "20", "23")))
 vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", True))
 vars.Add(BoolVariable("RUN_ON_HAZELHEN", "Add some special options on hazelhen", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))

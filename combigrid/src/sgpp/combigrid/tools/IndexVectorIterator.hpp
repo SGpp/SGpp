@@ -21,9 +21,15 @@ namespace combigrid {
 /**
  * Iterator over the indices contained in a FullGrid.
  */
-class IndexVectorIterator : public std::iterator<std::random_access_iterator_tag, IndexVector,
-                                                 size_t, IndexVector*, IndexVector&> {
+class IndexVectorIterator {
  public:
+  // member types formerly inherited from std::iterator (deprecated since C++17)
+  typedef std::random_access_iterator_tag iterator_category;
+  typedef IndexVector value_type;
+  typedef size_t difference_type;
+  typedef IndexVector* pointer;
+  typedef IndexVector& reference;
+
   /**
    * Default constructor, corresponds to the zero-dimensional case.
    */

@@ -7,5 +7,8 @@ import ModuleHelper
 
 Import("*")
 
-if env["ARCH"] in ("avx", "avx2", "avx512"):
+# The code using these operations is guarded by __AVX__, so compile them whenever the compiler
+# targets AVX (set by SGppConfigure.checkAVX; the ARCH test covers runs without configuration,
+# e.g., "scons -c").
+if env.get("COMPILER_TARGETS_AVX", False) or (env["ARCH"] in ("avx", "avx2", "avx512")):
   module.scanSource(".")

@@ -145,7 +145,7 @@ void PredictiveRefinement::refineGridpointsCollection(
     // delete key;
   }
 
-  collection.empty();
+  collection.clear();
 }
 
 void PredictiveRefinement::free_refine(GridStorage& storage,

@@ -5,6 +5,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <cstddef>  // std::ptrdiff_t
 #include <iostream>  // std::cout
 #include <algorithm>  // std::nth_element
 #include <vector>  // std::vector
@@ -28,8 +29,13 @@ class SubspaceGenerator {
 
   explicit SubspaceGenerator(unsigned int dim, unsigned int max_level);
 
-  class iterator
-    : std::iterator<std::forward_iterator_tag, pointer_type> {
+  class iterator {
+    typedef std::forward_iterator_tag iterator_category;
+    typedef pointer_type value_type;
+    typedef std::ptrdiff_t difference_type;
+    typedef pointer_type* pointer;
+    typedef pointer_type& reference;
+
    public:
     explicit iterator(SubspaceGenerator* p = nullptr) : ptr_(p) {}
     // implicit copy constructor, copy assignment and destructor

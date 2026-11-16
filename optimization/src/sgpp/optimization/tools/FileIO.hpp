@@ -271,7 +271,7 @@ void readMatrix(const std::string& filename, std::vector<T>& A, size_t& m, size_
         "entries of A.");
   }
 
-  A.empty();
+  A.clear();
 
   // entries
   for (size_t i = 0; i < m * n; i++) {

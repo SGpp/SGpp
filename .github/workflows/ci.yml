@@ -75,7 +75,10 @@ jobs:
       - name: build
         run: scons -j 2 RUN_CPP_EXAMPLES=1 RUN_PYTHON_EXAMPLES=1 CPPFLAGS=-Werror
   linux-packaging:
-    runs-on: ubuntu-latest
+    # Binary packages only run on systems with a glibc at least as new as the one they were built
+    # with, so the wheel's platform tag in create_and_patch_python_wheel.sh (manylinux_2_39) must
+    # match the runner's glibc: Ubuntu 24.04 ships glibc 2.39.
+    runs-on: ubuntu-24.04
     steps:
       - name: install scons
         run: python -m pip install scons

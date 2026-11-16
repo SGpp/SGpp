@@ -150,7 +150,7 @@ void ImpurityRefinement::refineGridpointsCollection(
       impurityIndicator.update(storage.getPoint(seqNr));
     }
   }
-  collection.empty();
+  collection.clear();
 }
 
 void ImpurityRefinement::free_refine(GridStorage& storage,

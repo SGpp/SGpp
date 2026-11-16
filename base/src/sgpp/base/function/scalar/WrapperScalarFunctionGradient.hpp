@@ -10,6 +10,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <utility>
 #include <memory>
 namespace sgpp {
 namespace base {
@@ -30,7 +31,7 @@ class WrapperScalarFunctionGradient : public ScalarFunctionGradient {
    * @param fGradient function gradient to be wrapped
    */
   WrapperScalarFunctionGradient(size_t d, FunctionGradientEvalType fGradient)
-      : ScalarFunctionGradient(d), fGradient(fGradient) {}
+      : ScalarFunctionGradient(d), fGradient(std::move(fGradient)) {}
 
   /**
    * Destructor.
